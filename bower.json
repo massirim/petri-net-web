@@ -1,0 +1,18 @@
+{
+  "name": "petri-net-web",
+  "description": "petri-net-web",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": [
+    "petri-net",
+    "graph",
+    "svg"
+  ],
+  "homepage": "https://github.com/FederalCircle/petri-net-web",
+  "dependencies": {
+    "angular": "^1.6.6",
+    "angular-ui-router": "^1.0.10",
+    "raphael": "^2.2.7",
+    "angular-material": "^1.1.5"
+  }
+}

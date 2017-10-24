@@ -1,0 +1,36 @@
+{
+  "name": "petri-net-web",
+  "version": "0.0.0",
+  "description": "petri-net-web",
+  "main": "index.js",
+  "scripts": {
+    "sass": "sass --watch app/assets/styles/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FederalCircle/petri-net-web.git"
+  },
+  "dependencies": {
+    "express": "^4.16.1",
+    "bower": "^1.8.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^2.2.1",
+    "grunt-contrib-htmlmin": "^2.4.0",
+    "grunt-contrib-uglify": "^3.1.0",
+    "grunt-usemin": "^3.1.1",
+    "http-server": "^0.10.0"
+  },
+  "keywords": [
+    "petri-net",
+    "graph",
+    "svg"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FederalCircle/petri-net-web/issues"
+  },
+  "homepage": "https://github.com/FederalCircle/petri-net-web#readme"
+}
