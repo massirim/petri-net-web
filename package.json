@@ -4,6 +4,8 @@
   "description": "petri-net-web",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "postinstall": "bash ./scripts/postinstall.sh",
     "sass": "sass --watch app/assets/styles/"
   },
   "repository": {
