@@ -1,5 +1,5 @@
 .tmp/
 node_modules/
+app/build/
 app/bower_components/
-**/.sass-cache/
 npm-debug.log

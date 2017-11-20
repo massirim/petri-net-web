@@ -6,6 +6,7 @@
         <base href="/">
 
         <!-- build:css assets/vendor.css -->
+        <link href="bower_components/angular-material/modules/js/core/core.min.css" rel="stylesheet">
         <!-- endbuild -->
 
         <!-- build:css assets/app.css -->
@@ -17,13 +18,24 @@
     <body ng-app="petriNet">
         <div ui-view></div>
 
+        <script type="text/javascript">
+            var a = new Date;
+        </script>
+
         <!-- build:js scripts/vendor.general.js -->
         <script src="bower_components/raphael/raphael.min.js" type="text/javascript"></script>
         <!-- endbuild -->
 
         <!-- build:js scripts/vendor.angular.js -->
         <script src="bower_components/angular/angular.min.js" type="text/javascript"></script>
+        <script src="bower_components/angular-aria/angular-aria.min.js" type="text/javascript"></script>
+        <script src="bower_components/angular-animate/angular-animate.min.js" type="text/javascript"></script>
+        <script src="bower_components/angular-messages/angular-messages.min.js" type="text/javascript"></script>
         <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js" type="text/javascript"></script>
+        <!-- endbuild -->
+
+        <!-- build:js scripts/vendor.material.js -->
+        <script src="bower_components/angular-material/modules/js/core/core.min.js" type="text/javascript"></script>
         <!-- endbuild -->
 
         <!-- build:js scripts/app.modules.js -->

@@ -79,9 +79,4 @@ module.exports = function(grunt) {
         'htmlmin:index',
         'clean:pos'
     ]);
-
-    grunt.registerTask('h', [
-        'clean:pre',
-        'htmlmin'
-    ]);
 }
