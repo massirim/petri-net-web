@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    playgroundController.$inject = ['svgService'];
-    function playgroundController(svgService) {
+    playgroundController.$inject = ['petriUiService'];
+    function playgroundController(petriUiService) {
         var vm = this;
 
         vm.addPlace = addPlace;
@@ -18,30 +18,30 @@
 
         ///// Functions /////
         function _init() {
-            svgService.newDraw('Paper');
+            petriUiService.newDraw('Paper');
             //_mock();
         }
 
         function _mock() {
-            svgService.newPlace(100);
-            svgService.newPlace(100);
-            svgService.newPlace(100);
+            petriUiService.newPlace(100);
+            petriUiService.newPlace(100);
+            petriUiService.newPlace(100);
         }
 
         function addPlace() {
-            svgService.newPlace(100);
+            petriUiService.newPlace(100);
         }
 
         function addTransition() {
-            svgService.newTransition(50, 100);
+            petriUiService.newTransition(50, 100);
         }
 
         function addArc() {
-            svgService.activateConnect();
+            petriUiService.activateConnect();
         }
 
         function remove() {
-            svgService.toggleRemoveEvent();
+            petriUiService.toggleRemoveEvent();
         }
 
         function help() {
@@ -56,7 +56,7 @@
         }
 
         function clear() {
-            svgService.newDraw('Paper');
+            petriUiService.newDraw('Paper');
         }
     }
 

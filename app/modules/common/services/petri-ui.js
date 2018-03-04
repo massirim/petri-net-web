@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    svgService.$inject = [];
-    function svgService() {
+    petriUiService.$inject = [];
+    function petriUiService() {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
@@ -34,9 +34,23 @@
                 zoomMax: 2
             },
             nodeStyle: {
-                fill: '#FFF',
-                stroke: '#9C9C9C',
-                'stroke-width': '0.5px'
+                place: {
+                    fill: '#FFF',
+                    stroke: '#9C9C9C',
+                    'stroke-width': '0.5px'
+                },
+                transition: {
+                    fill: '#000'
+                }
+            },
+            nodeSize: {
+                place: {
+                    diameter: 100
+                },
+                transition: {
+                    width: 30,
+                    height: 70
+                }
             }
         };
 
@@ -57,20 +71,21 @@
 
             var newPlaceElement = _places
                 .group()
-                .attr(_config.nodeStyle)
-                .circle(diameter)
+                .circle(_config.nodeSize.place.diameter)
+                .attr(_config.nodeStyle.place)
                 .move(x || 0, y || 0)
                 .draggy();
             _addDropShadow(newPlaceElement);
             return newPlaceElement.node.id;
         }
 
-        function newTransition(width, height, x, y) {
+        function newTransition(x, y) {
             _checkGroups();
 
             var newTransitionElement = _transitions
-                .group().rect(width, height)
-                .attr(_config.nodeStyle)
+                .group()
+                .rect(_config.nodeSize.transition.width, _config.nodeSize.transition.height)
+                .attr(_config.nodeStyle.transition)
                 .move(x || 0, y || 0)
                 .draggy();
             _addDropShadow(newTransitionElement);
@@ -206,5 +221,5 @@
         }
     }
 
-    angular.module('petriNet.common').service('svgService', svgService);
+    angular.module('petriNet.common').service('petriUiService', petriUiService);
 })();
