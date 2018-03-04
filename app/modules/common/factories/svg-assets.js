@@ -3,12 +3,12 @@
 
     /** TODO
      * @ngdoc service
-     * @name petriNet.common.factory:placesAssetsFactory
+     * @name petriNet.common.factory:svgAssetsFactory
      * @description
      * Handles the visual assets of svg petri net's elements
      **/
-    placesAssetsFactory.$inject = [];
-    function placesAssetsFactory() {
+    svgAssetsFactory.$inject = [];
+    function svgAssetsFactory() {
         var factory = {
             getTokens: getTokens,
             setTokens: setTokens,
@@ -21,7 +21,7 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.factory:placesAssetsFactory
+         * @methodOf petriNet.common.factory:svgAssetsFactory
          * @param {type} param description...
          * @returns {type} description...
          * @description
@@ -69,14 +69,14 @@
                 .cy(place.cy());
         }
 
-        /** TODO
+        /**
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.factory:placesAssetsFactory
-         * @param {type} param description...
-         * @returns {type} description...
+         * @methodOf petriNet.common.factory:svgAssetsFactory
+         * @param {SVG.Element} place Place to get tokens of
+         * @returns {Array} Tokens inside the place
          * @description
-         * description...
+         * Return an array with all the tokens elements in the place.
          **/
         function getTokens(place) {
             var tokens = place.parent()
@@ -88,11 +88,11 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.factory:placesAssetsFactory
-         * @param {type} param description...
-         * @returns {type} description...
+         * @methodOf petriNet.common.factory:svgAssetsFactory
+         * @param {SVG.Element} element Element to put a label on
+         * @param {String} text Label text
          * @description
-         * description...
+         * Adds a text label bellow the element.
          **/
         function addLabel(element, text) {
             var label = element.parent()
@@ -105,5 +105,5 @@
         }
     }
 
-    angular.module('petriNet.common').factory('placesAssetsFactory', placesAssetsFactory);
+    angular.module('petriNet.common').factory('svgAssetsFactory', svgAssetsFactory);
 })();
