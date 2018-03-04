@@ -11,11 +11,11 @@
             }
         },
         {
-            state: 'main.home',
+            state: 'playground',
             config: {
                 url: '/',
-                controller: 'HomeController as vm',
-                templateUrl: 'modules/common/views/home.html'
+                controller: 'PlaygroundController as vm',
+                templateUrl: 'modules/common/views/playground.html'
             }
         }
     ];

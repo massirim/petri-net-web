@@ -1,0 +1,23 @@
+<div id="Playground">
+    <background-text ng-bind="vm.backgroundText"></background-text>
+
+    <div id="Paper"></div>
+
+    <div class="bottom-menu container-fluid">
+        <div class="row">
+            <div class="col text-center">
+                <button class="btn btn-success" ng-click="vm.addPlace()"> <i class="far fa-circle"></i> </button>
+                <button class="btn btn-success" ng-click="vm.addTransition()"> <i class="far fa-square"></i> </button>
+                <button class="btn btn-info" ng-click="vm.addArc()"> <i class="fas fa-long-arrow-alt-right"></i> </button>
+                <button class="btn btn-danger" ng-click="vm.remove()"> <i class="far fa-times-circle"></i> </button>
+                <button class="btn btn-secondary" ng-click="vm.help()"> <i class="fas fa-question"></i> </button>
+                <button class="btn btn-dark" ng-click="vm.clear()"> <i class="far fa-file"></i> </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <small>by: Alyson Maia (<a href="https://github.com/FederalCircle">Github</a>)</small>
+            </div>
+        </div>
+    </div>
+</div>

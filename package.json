@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "postinstall": "bash ./scripts/postinstall.sh",
+    "deploy-local": "bash ./scripts/deploy-local.sh",
     "sass": "sass --watch app/assets/scss:app/assets/styles --style compressed"
   },
   "repository": {

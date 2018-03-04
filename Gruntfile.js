@@ -19,6 +19,7 @@ module.exports = function(grunt) {
                 expand: true,
                 filter: 'isFile',
                 src: [
+                    'assets/font-awesome/webfonts/*',
                     'assets/img/*',
                     'index.html'
                 ],
