@@ -1,6 +1,11 @@
 (function() {
     'use strict';
 
+    /** TODO
+     * @ngdoc controller
+     * @name petriNet.common.controller:MainController
+     * @description Main controller
+     **/
     mainController.$inject = [];
     function mainController() {
         var vm = this;

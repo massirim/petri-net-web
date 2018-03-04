@@ -1,6 +1,11 @@
 (function() {
     'use strict';
 
+    /** TODO
+     * @ngdoc controller
+     * @name petriNet.common.controller:PlaygroundController
+     * @description Playground controller
+     **/
     playgroundController.$inject = ['petriUiService'];
     function playgroundController(petriUiService) {
         var vm = this;
@@ -23,27 +28,72 @@
         }
 
         function _mock() {
-            petriUiService.newPlace(100);
-            petriUiService.newPlace(100);
-            petriUiService.newPlace(100);
+            petriUiService.newPlace();
+            petriUiService.newPlace();
+            petriUiService.newPlace();
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function addPlace() {
-            petriUiService.newPlace(100);
+            petriUiService.newPlace();
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function addTransition() {
-            petriUiService.newTransition(50, 100);
+            petriUiService.newTransition();
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function addArc() {
             petriUiService.activateConnect();
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function remove() {
             petriUiService.toggleRemoveEvent();
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function help() {
             alert(
                 '>> Resize:\n' +
@@ -55,6 +105,15 @@
             );
         }
 
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.controller:PlaygroundController
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function clear() {
             petriUiService.newDraw('Paper');
         }

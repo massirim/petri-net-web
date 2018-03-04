@@ -56,6 +56,15 @@ module.exports = function(grunt) {
             pre: ['app/build/'],
             pos: ['.tmp/']
         }
+        // ngdocs: {
+        //     main: {
+        //         // cwd: '<%= app %>',
+        //         src: [
+        //             'app/modules/**/*.js',
+        //             '!app/modules/**/*.spec.js'],
+        //         title: 'API Documentation'
+        //     }
+        // }
     };
 
     grunt.initConfig(config);
@@ -67,6 +76,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-usemin');
+    // grunt.loadNpmTasks('grunt-ngdocs');
 
     grunt.registerTask('default', [
         'clean:pre',
@@ -78,6 +88,7 @@ module.exports = function(grunt) {
         'uglify',
         'usemin',
         'htmlmin:index',
-        'clean:pos'
+        'clean:pos',
+        'ngdocs'
     ]);
 }

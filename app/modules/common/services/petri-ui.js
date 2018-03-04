@@ -1,13 +1,18 @@
 (function() {
     'use strict';
 
-    petriUiService.$inject = [];
-    function petriUiService() {
+    /** TODO
+     * @ngdoc service
+     * @name petriNet.common.service:petriUiService
+     * @description
+     * description...
+     **/
+    petriUiService.$inject = ['petriLogicService'];
+    function petriUiService(petriLogicService) {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
             newTransition: newTransition,
-            newArc: newArc,
             toggleRemoveEvent: toggleRemoveEvent,
             activateConnect: activateConnect
         };
@@ -23,94 +28,88 @@
         // Aux
         var _isRemoveOn = false;
         var _connectClicksCount = 0;
-        var _connectSourceElement = {};
-        var _connectTargetElement = {};
-        var _arcsList = [];
+        var _sourceElement = {};
+        var _targetElement = {};
 
         // Config
-        var _config = {
-            zoom: {
-                zoomMin: .5,
-                zoomMax: 2
-            },
-            nodeStyle: {
-                place: {
-                    fill: '#FFF',
-                    stroke: '#9C9C9C',
-                    'stroke-width': '0.5px'
-                },
-                transition: {
-                    fill: '#000'
-                }
-            },
-            nodeSize: {
-                place: {
-                    diameter: 100
-                },
-                transition: {
-                    width: 30,
-                    height: 70
-                }
-            }
-        };
+        var _config = _defaultConfigValue();
 
         return service;
 
         ///// Functions /////
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.service:petriUiService
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function newDraw(element, width, height) {
             if ( angular.equals(_draw, {}) ) {
                 _draw = SVG(element).size(width || '100%', height || '100%').panZoom(_config.zoom);
                 _checkGroups();
             }
             else
-                _clear();
+                _reset();
         }
 
-        function newPlace(diameter, x, y) {
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.service:petriUiService
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
+        function newPlace(tokens) {
             _checkGroups();
 
             var newPlaceElement = _places
                 .group()
                 .circle(_config.nodeSize.place.diameter)
                 .attr(_config.nodeStyle.place)
-                .move(x || 0, y || 0)
                 .draggy();
             _addDropShadow(newPlaceElement);
-            return newPlaceElement.node.id;
+
+            petriLogicService.addPlace(newPlaceElement.node.id, {
+                tokens: tokens || 0
+            });
         }
 
-        function newTransition(x, y) {
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.service:petriUiService
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
+        function newTransition() {
             _checkGroups();
 
             var newTransitionElement = _transitions
                 .group()
                 .rect(_config.nodeSize.transition.width, _config.nodeSize.transition.height)
                 .attr(_config.nodeStyle.transition)
-                .move(x || 0, y || 0)
                 .draggy();
             _addDropShadow(newTransitionElement);
-            return newTransitionElement.node.id;
+
+            petriLogicService.addTransition(newTransitionElement.node.id, {});
         }
 
-        function newArc(source, target) {
-            var newConn = _connectSourceElement.connectable({
-                sourceAttach: 'perifery',
-                targetAttach: 'perifery',
-                type: 'default',
-                container: _arcs,
-                markers: _markers,
-            }, _connectTargetElement);
-
-            newConn.setMarker('default', _markers);
-            newConn.connector.attr({'stroke-width': '1px'});
-
-            _arcsList.push({
-                sourceId: _connectSourceElement.node.id,
-                targetId: _connectTargetElement.node.id,
-                connector: newConn
-            });
-        }
-
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.service:petriUiService
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function toggleRemoveEvent() {
             if (_isRemoveOn) {
                 _nodes.off('click');
@@ -123,12 +122,110 @@
             }
         }
 
+        function _removeHandler(event) {
+            var elementId = event.target.id;
+            var elementType = event.target.localName;
+            var element = SVG.get(elementId);
+            element.remove();
+
+            var arcsToRemove = petriLogicService.remove(elementType, elementId);
+
+            if (arcsToRemove.length > 0) {
+                angular.forEach(arcsToRemove, function (arcId) {
+                    var arcElem = SVG.get(arcId);
+                    arcElem.remove();
+                });
+            }
+        }
+
+        /** TODO
+         * @ngdoc method
+         * @name methodName
+         * @methodOf petriNet.common.service:petriUiService
+         * @param {type} param description...
+         * @returns {type} description...
+         * @description
+         * description...
+         **/
         function activateConnect() {
             _nodes.click(_connectHandler);
             _nodes.touchend(_connectHandler);
         }
 
-        function _clear() {
+        function _connectHandler(event) {
+            if (_connectClicksCount === 0) {
+                _sourceElement = SVG.get(event.target.id);
+                _connectClicksCount++;
+            } else {
+                _targetElement = SVG.get(event.target.id);
+                _connect();
+                _connectClicksCount = 0;
+                _nodes.off('click');
+                _nodes.off('touchend');
+            }
+        }
+
+        function _connect() {
+            var sourceType = _sourceElement.node.localName;
+            var sourceId = _sourceElement.node.id;
+            var targetType = _targetElement.node.localName;
+            var targetId = _targetElement.node.id;
+
+            if( petriLogicService.isValidArc(sourceType, targetType) ) {
+                var newConn = _sourceElement.connectable({
+                    sourceAttach: 'perifery',
+                    targetAttach: 'perifery',
+                    type: 'default',
+                    container: _arcs,
+                    markers: _markers,
+                }, _targetElement);
+
+                newConn.setMarker('default', _markers);
+                newConn.connector.attr(_config.nodeStyle.arc);
+
+                petriLogicService.addArc(newConn.connector.node.id, {
+                    sourceId: sourceId,
+                    targetId: targetId,
+                    value: 1
+                });
+            }
+
+            _sourceElement = {};
+            _targetElement = {};
+        }
+
+        function _defaultConfigValue() {
+            return {
+                zoom: {
+                    zoomMin: .5,
+                    zoomMax: 2
+                },
+                nodeStyle: {
+                    place: {
+                        fill: '#FFF',
+                        stroke: '#9C9C9C',
+                        'stroke-width': '0.5px'
+                    },
+                    transition: {
+                        fill: '#000'
+                    },
+                    arc: {
+                        'stroke-width': '2px'
+                    }
+                },
+                nodeSize: {
+                    place: {
+                        diameter: 100
+                    },
+                    transition: {
+                        width: 20,
+                        height: 100
+                    }
+                }
+            };
+        }
+
+        function _reset() {
             if ( angular.equals(_draw, {}) ) return;
 
             _centerView();
@@ -142,9 +239,10 @@
 
             _isRemoveOn = false;
             _connectClicksCount = 0;
-            _connectSourceElement = {};
-            _connectTargetElement = {};
-            _arcsList = [];
+            _sourceElement = {};
+            _targetElement = {};
+
+            petriLogicService.reset();
         }
 
         function _centerView() {
@@ -166,46 +264,6 @@
             if ( angular.equals(_transitions, {}) ) _transitions = _nodes.group();
             if ( angular.equals(_arcs, {}) ) _arcs = _draw.group();
             if ( angular.equals(_markers, {}) ) _markers = _draw.group();
-        }
-
-        function _removeHandler(event) {
-            var elementId = event.target.id;
-            var element = SVG.get(elementId);
-            element.remove();
-
-            var keysToRemove = [];
-            var arcsToRemove = _arcsList.filter(function (arc, key) {
-                var bool = arc.sourceId === elementId || arc.targetId === elementId;
-                if (bool) {
-                    keysToRemove.push(key);
-                }
-                return bool;
-            });
-
-            angular.forEach(arcsToRemove, function (arc, key) {
-                var arcElem = SVG.get(arc.connector.connector.node.id);
-                arcElem.remove();
-
-                _arcsList.splice(keysToRemove[key] - key, 1);
-            });
-
-
-        }
-
-        function _connectHandler(event) {
-            if (_connectClicksCount === 0) {
-                _connectSourceElement = SVG.get(event.target.id);
-                _connectClicksCount++;
-            } else {
-                _connectTargetElement = SVG.get(event.target.id);
-                if ( _connectSourceElement.node.id !== _connectTargetElement.node.id)
-                    newArc(_connectSourceElement, _connectTargetElement);
-                _connectSourceElement = {};
-                _connectTargetElement = {};
-                _connectClicksCount = 0;
-                _nodes.off('click');
-                _nodes.off('touchend');
-            }
         }
 
         function _addDropShadow(node) {
