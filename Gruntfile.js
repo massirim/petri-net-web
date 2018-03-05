@@ -88,7 +88,6 @@ module.exports = function(grunt) {
         'uglify',
         'usemin',
         'htmlmin:index',
-        'clean:pos',
-        'ngdocs'
+        'clean:pos'
     ]);
 }
