@@ -27,17 +27,22 @@
          * description...
          **/
         function newPlace(container, x, y, tokens) {
-            var newPlaceElement = container
+            var diameter = configFactory.get().nodeSize.place.diameter;
+            var style = configFactory.get().nodeStyle.place;
+            var hasShadow = configFactory.get().nodeStyle.place.shadow;
+
+            var placeElement = container
                 .group()
                 .draggy()
-                .circle(configFactory.get().nodeSize.place.diameter)
+                .circle(diameter)
                 .move(x, y)
-                .attr(configFactory.get().nodeStyle.place);
-            setTokens(newPlaceElement, tokens);
-            if (configFactory.get().nodeStyle.place.shadow)
-                svgAssetsFactory.addDropShadow(newPlaceElement);
+                .attr(style);
 
-            return newPlaceElement;
+            setTokens(placeElement, tokens);
+            if (hasShadow)
+                svgAssetsFactory.addDropShadow(placeElement);
+
+            return placeElement;
         }
 
         /** TODO

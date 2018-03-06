@@ -4,7 +4,7 @@
     /** TODO
      * @ngdoc controller
      * @name petriNet.common.controller:ControllerSampleController
-     * @description Main controller
+     * @description Sample controller
      **/
     controllerSampleController.$inject = [];
     function controllerSampleController() {
