@@ -43,7 +43,11 @@
          * description...
          **/
         function addPlace() {
-            petriUiService.newPlace();
+            var tokens = window.prompt('Tokens quantity:', '1');
+            if( tokens !== null) {
+                tokens = tokens - 0; // String to number
+                petriUiService.newPlace(tokens);
+            }
         }
 
         /** TODO

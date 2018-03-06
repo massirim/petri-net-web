@@ -7,8 +7,8 @@
      * @description
      * description...
      **/
-    petriUiService.$inject = ['petriLogicService'];
-    function petriUiService(petriLogicService) {
+    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory'];
+    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory) {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
@@ -31,24 +31,23 @@
         var _sourceElement = {};
         var _targetElement = {};
 
-        // Config
-        var _config = _defaultConfigValue();
-
         return service;
 
         ///// Functions /////
-        /** TODO
+
+        /**
          * @ngdoc method
-         * @name methodName
+         * @name newDraw
          * @methodOf petriNet.common.service:petriUiService
-         * @param {type} param description...
-         * @returns {type} description...
+         * @param {String} element ID of the html element to insert the SVG element.
+         * @param {int | string} width Width to spawn the SVG element.
+         * @param {int | string} height Height to spawn the SVG element.
          * @description
-         * description...
+         * Starts a new SVG element or resets an existing one.
          **/
         function newDraw(element, width, height) {
             if ( angular.equals(_draw, {}) ) {
-                _draw = SVG(element).size(width || '100%', height || '100%').panZoom(_config.zoom);
+                _draw = SVG(element).size(width || '100%', height || '100%').panZoom(configFactory.get().zoom);
                 _checkGroups();
             }
             else
@@ -66,16 +65,13 @@
          **/
         function newPlace(tokens) {
             _checkGroups();
+            tokens = tokens || 0;
 
-            var newPlaceElement = _places
-                .group()
-                .circle(_config.nodeSize.place.diameter)
-                .attr(_config.nodeStyle.place)
-                .draggy();
-            _addDropShadow(newPlaceElement);
-
+            var center = _centerPosition();
+            var newPlaceElement = placeFactory.newPlace(_places, center.x, center.y, tokens);
+            // Informs the logic service that a new place was created
             petriLogicService.addPlace(newPlaceElement.node.id, {
-                tokens: tokens || 0
+                tokens: tokens
             });
         }
 
@@ -93,12 +89,31 @@
 
             var newTransitionElement = _transitions
                 .group()
-                .rect(_config.nodeSize.transition.width, _config.nodeSize.transition.height)
-                .attr(_config.nodeStyle.transition)
+                .rect(configFactory.get().nodeSize.transition.width, configFactory.get().nodeSize.transition.height)
+                .attr(configFactory.get().nodeStyle.transition)
                 .draggy();
-            _addDropShadow(newTransitionElement);
+            svgAssetsFactory.addDropShadow(newTransitionElement);
 
             petriLogicService.addTransition(newTransitionElement.node.id, {});
+        }
+
+        /**
+         * @ngdoc method
+         * @name _initialPosition
+         * @methodOf petriNet.common.service:petriUiService
+         * @returns {Object} Coordinates to the center of the SVG element
+         * @description
+         * Evaluate the coordinates to the SVG element center position
+         **/
+        function _centerPosition() {
+            var svgViewBox = _draw.node.viewBox.baseVal;
+            var svgWidth = _draw.node.width.baseVal.value;
+            var svgHeight = _draw.node.height.baseVal.value;
+
+            return {
+                x: svgViewBox.x + svgWidth / 2,
+                y: svgViewBox.y + svgHeight / 2
+            };
         }
 
         /** TODO
@@ -181,7 +196,7 @@
                 }, _targetElement);
 
                 newConn.setMarker('default', _markers);
-                newConn.connector.attr(_config.nodeStyle.arc);
+                newConn.connector.attr(configFactory.get().nodeStyle.arc);
 
                 petriLogicService.addArc(newConn.connector.node.id, {
                     sourceId: sourceId,
@@ -192,37 +207,6 @@
 
             _sourceElement = {};
             _targetElement = {};
-        }
-
-        function _defaultConfigValue() {
-            return {
-                zoom: {
-                    zoomMin: .5,
-                    zoomMax: 2
-                },
-                nodeStyle: {
-                    place: {
-                        fill: '#FFF',
-                        stroke: '#9C9C9C',
-                        'stroke-width': '0.5px'
-                    },
-                    transition: {
-                        fill: '#000'
-                    },
-                    arc: {
-                        'stroke-width': '2px'
-                    }
-                },
-                nodeSize: {
-                    place: {
-                        diameter: 50
-                    },
-                    transition: {
-                        width: 10,
-                        height: 50
-                    }
-                }
-            };
         }
 
         function _reset() {
@@ -264,18 +248,6 @@
             if ( angular.equals(_transitions, {}) ) _transitions = _nodes.group();
             if ( angular.equals(_arcs, {}) ) _arcs = _draw.group();
             if ( angular.equals(_markers, {}) ) _markers = _draw.group();
-        }
-
-        function _addDropShadow(node) {
-            node.filter(function(add) {
-                var blur = add
-                    .offset(1, 2)
-                    .in(add.sourceAlpha)
-                    .gaussianBlur(2);
-                add.blend(add.source, blur);
-
-                this.size('200%','200%').move('-50%', '-50%');
-            });
         }
     }
 
