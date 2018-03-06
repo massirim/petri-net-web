@@ -26,7 +26,7 @@
          * @description
          * description...
          **/
-        function newPlace(container, x, y, tokens) {
+        function newPlace(container, x, y, label, tokens) {
             var diameter = configFactory.get().nodeSize.place.diameter;
             var style = configFactory.get().nodeStyle.place;
             var hasShadow = configFactory.get().nodeStyle.place.shadow;
@@ -39,6 +39,7 @@
                 .attr(style);
 
             setTokens(placeElement, tokens);
+            svgAssetsFactory.addLabel(placeElement, label);
             if (hasShadow)
                 svgAssetsFactory.addDropShadow(placeElement);
 
@@ -98,7 +99,7 @@
             // Draw more dots if needed
             for (var i = qty - tokensCount; i > 0; i--) {
                 place.parent()
-                    .circle(5)
+                    .circle(10)
                     .addClass('token-dot')
                     .fill('#000')
                     .cx(place.cx())

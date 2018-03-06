@@ -26,13 +26,17 @@
          * Adds a text label bellow the element.
          **/
         function addLabel(element, text) {
-            var label = element.parent()
-                .text(text)
-                .attr({
-                    'style': 'user-select:none;'
-                })
-                .cx(element.cx())
-                .cy(element.cy() + element.height()/2 + 15);
+            if(text) {
+                var label = element.parent()
+                    .text(text)
+                    .attr({
+                        'style': 'user-select:none;'
+                    })
+                    .cx(element.cx())
+                    .cy(element.cy() + element.height()/2 + 15);
+                
+                return label;
+            }
         }
 
         /**

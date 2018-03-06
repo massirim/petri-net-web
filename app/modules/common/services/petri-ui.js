@@ -7,8 +7,8 @@
      * @description
      * description...
      **/
-    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory'];
-    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory) {
+    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory', 'transitionFactory'];
+    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory, transitionFactory) {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
@@ -63,12 +63,12 @@
          * @description
          * description...
          **/
-        function newPlace(tokens) {
+        function newPlace(label, tokens) {
             _checkGroups();
             tokens = tokens || 0;
 
             var center = _centerPosition();
-            var newPlaceElement = placeFactory.newPlace(_places, center.x, center.y, tokens);
+            var newPlaceElement = placeFactory.newPlace(_places, center.x, center.y, label, tokens);
             // Informs the logic service that a new place was created
             petriLogicService.addPlace(newPlaceElement.node.id, {
                 tokens: tokens
@@ -84,17 +84,13 @@
          * @description
          * description...
          **/
-        function newTransition() {
+        function newTransition(label) {
             _checkGroups();
 
-            var newTransitionElement = _transitions
-                .group()
-                .rect(configFactory.get().nodeSize.transition.width, configFactory.get().nodeSize.transition.height)
-                .attr(configFactory.get().nodeStyle.transition)
-                .draggy();
-            svgAssetsFactory.addDropShadow(newTransitionElement);
-
-            petriLogicService.addTransition(newTransitionElement.node.id, {});
+            var center = _centerPosition();
+            var transitionElement = transitionFactory.newTransition(_transitions, center.x, center.y, label);
+            // Informs the logic service that a new transition was created
+            petriLogicService.addTransition(transitionElement.node.id, {});
         }
 
         /**
