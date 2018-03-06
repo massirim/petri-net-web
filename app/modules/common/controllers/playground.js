@@ -43,10 +43,13 @@
          * description...
          **/
         function addPlace() {
-            var tokens = window.prompt('Tokens quantity:', '1');
-            if( tokens !== null) {
-                tokens = tokens - 0; // String to number
-                petriUiService.newPlace(tokens);
+            var label = window.prompt('Place label (Leave it blank for no label)');
+            if( label !== null) {
+                var tokens = window.prompt('Tokens quantity', '1');
+                if( tokens !== null) {
+                    tokens = tokens - 0; // String to number
+                    petriUiService.newPlace(label, tokens);
+                }
             }
         }
 
@@ -60,7 +63,10 @@
          * description...
          **/
         function addTransition() {
-            petriUiService.newTransition();
+            var label = window.prompt('Transition label (Leave it blank for no label)');
+            if( label !== null) {
+                petriUiService.newTransition(label);
+            }
         }
 
         /** TODO
