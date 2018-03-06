@@ -12,6 +12,24 @@
         bottom: 10px;
         width: 100%;
 
+        .tool-message {
+            padding: 10px;
+            font-weight: 600;
+
+            &.remove {
+                color: $color-bootstrap-danger;
+            }
+
+            &.arc {
+                color: $color-bootstrap-info;
+            }
+
+            &.blink-text {
+                animation-name: blink-text;
+                animation-duration: 1.5s;
+            }
+        }
+
         .btn {
             min-width: 50px;
             margin: 0 2px;

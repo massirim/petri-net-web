@@ -18,7 +18,9 @@
         vm.clear = clear;
 
         vm.backgroundText = 'PetriNet Playground';
-        vm.toolMessage = "";
+        vm.toolMessage = {};
+
+        var _activeTool = '';
 
         _init();
 
@@ -46,7 +48,7 @@
         function addPlace() {
             var label = window.prompt('Place label (Leave it blank for no label)');
             if( label !== null) {
-                var tokens = window.prompt('Tokens quantity', '1');
+                var tokens = window.prompt('Tokens quantity', '0');
                 if( tokens !== null) {
                     tokens = tokens - 0; // String to number
                     petriUiService.newPlace(label, tokens);
@@ -80,15 +82,17 @@
          * description...
          **/
         function addArc() {
-            vm.toolMessage = "Click on an element to be the SOURCE...";
+            vm.toolMessage.type = _activeTool = 'arc';
+            vm.toolMessage.text = 'Click on an element to be the SOURCE...';
             petriUiService.activateConnect(function firtClick() {
-                vm.toolMessage = "Click on a diferent type of element to be the TARGET...";
+                vm.toolMessage.text = 'Click on a diferent type of element to be the TARGET...';
                 $scope.$digest();
             }, function secondClick() {
-                vm.toolMessage = "";
+                vm.toolMessage.text = '';
                 $scope.$digest();
             }, function wrongClick() {
-                vm.toolMessage = "The source and target cannot be the same type!";
+                vm.toolMessage.text = 'The source and target cannot be the same type! Select another element...';
+                _activeTool = '';
                 $scope.$digest();
             });
         }
@@ -103,7 +107,17 @@
          * description...
          **/
         function remove() {
-            petriUiService.toggleRemoveEvent();
+            vm.toolMessage.type = 'remove';
+            if(_activeTool === 'remove') {
+                _activeTool = '';
+                vm.toolMessage.text = '';
+            }
+            else {
+                _activeTool = 'remove';
+                vm.toolMessage.text = 'Click on an element to DELETE it';
+            }
+
+            petriUiService.toggleRemove();
         }
 
         /** TODO

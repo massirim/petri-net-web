@@ -13,7 +13,7 @@
             newDraw: newDraw,
             newPlace: newPlace,
             newTransition: newTransition,
-            toggleRemoveEvent: toggleRemoveEvent,
+            toggleRemove: toggleRemove,
             activateConnect: activateConnect
         };
 
@@ -54,7 +54,7 @@
                 _checkGroups();
             }
             else
-                _reset();
+                _resetService();
         }
 
         /** TODO
@@ -68,6 +68,7 @@
          **/
         function newPlace(label, tokens) {
             _checkGroups();
+            _resetTools();
             tokens = tokens || 0;
 
             var center = _centerPosition();
@@ -89,6 +90,7 @@
          **/
         function newTransition(label) {
             _checkGroups();
+            _resetTools();
 
             var center = _centerPosition();
             var transitionElement = transitionFactory.newTransition(_transitions, center.x, center.y, label);
@@ -124,23 +126,23 @@
          * @description
          * description...
          **/
-        function toggleRemoveEvent(activeCallback, inactiveCallback) {
+        function toggleRemove(activeCallback, inactiveCallback) {
+            _resetTools();
             if (_isRemoveOn) {
-                _nodes.off('click');
-                _nodes.off('touchend');
+                _elements.off('click');
+                _elements.off('touchend');
                 _isRemoveOn = false;
-                inactiveCallback
             } else {
-                _nodes.click(_removeHandler);
-                _nodes.touchend(_removeHandler);
+                _elements.click(_removeHandler);
+                _elements.touchend(_removeHandler);
                 _isRemoveOn = true;
-                activeCallback();
+                console.log('deactivated')
             }
         }
 
         function _removeHandler(event) {
             var elementId = event.target.id;
-            var elementType = event.target.localName;
+            var elementType = event.target.tagName;
             var element = SVG.get(elementId);
             element.remove();
 
@@ -164,6 +166,7 @@
          * description...
          **/
         function activateConnect(firstClickCallback, secondClickCallback, wrongClickCallback) {
+            _resetTools();
             _firstClickCallback = firstClickCallback;
             _secondClickCallback = secondClickCallback;
             _wrongClickCallback = wrongClickCallback;
@@ -181,24 +184,17 @@
                     _sourceElement = clickTarget;
                     _connectClicksCount++;
                     _firstClickCallback();
-                    console.log("first click");
                 }
             } else { // Click on target element
                 // Same type elements cannot be connected
                 if (clickTarget.node.tagName === _sourceElement.node.tagName) {
                     _wrongClickCallback();
-                    console.log("wrong click");
                 }
                 else {
                     _targetElement = clickTarget;
                     _newArc();
 
                     _secondClickCallback();
-                    console.log("second click");
-                    _connectClicksCount = 0;
-                    _firstClickCallback = function() {};
-                    _secondClickCallback = function() {};
-                    _wrongClickCallback = function() {};
                     _nodes.off('click');
                     _nodes.off('touchend');
                 }
@@ -220,12 +216,9 @@
                     value: 1
                 });
             }
-
-            _sourceElement = {};
-            _targetElement = {};
         }
 
-        function _reset() {
+        function _resetService() {
             if ( angular.equals(_draw, {}) ) return;
 
             _centerView();
@@ -235,8 +228,13 @@
             _places = {};
             _transitions = {};
             _arcs = {};
-            _markers = {};
 
+            _resetTools();
+
+            petriLogicService.reset();
+        }
+
+        function _resetTools() {
             _isRemoveOn = false;
             _connectClicksCount = 0;
             _sourceElement = {};
@@ -245,7 +243,8 @@
             _secondClickCallback = function() {};
             _wrongClickCallback = function() {};
 
-            petriLogicService.reset();
+            _elements.off('click');
+            _elements.off('touchend');
         }
 
         function _centerView() {

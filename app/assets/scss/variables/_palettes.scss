@@ -1,23 +1,33 @@
 /* Color palette */
-$black:            #000000;
-$white:            #FFFFFF;
+$color-black:            #000000;
+$color-white:            #FFFFFF;
 
-$light-grey:       #EEEEEE;
-$grey:             #9E9E9E;
-$dark-grey:        #424242;
+$color-grey-light:       #EEEEEE;
+$color-grey:             #9E9E9E;
+$color-grey-dark:        #424242;
 
-$light-red:        #EF9A9A;
-$red:              #F44336;
-$dark-red:         #C62828;
+$color-red-light:        #EF9A9A;
+$color-red:              #F44336;
+$color-red-dark:         #C62828;
 
-$light-green:      #A5D6A7;
-$green:            #4CAF50;
-$dark-green:       #2E7D32;
+$color-green-light:      #A5D6A7;
+$color-green:            #4CAF50;
+$color-green-dark:       #2E7D32;
 
-$light-blue:       #90CAF9;
-$blue:             #2196F3;
-$dark-blue:        #1565C0;
+$color-blue-light:       #90CAF9;
+$color-blue:             #2196F3;
+$color-blue-dark:        #1565C0;
 
-$light-yellow:     #FFF59D;
-$yellow:           #FFEB3B;
-$dark-yellow:      #F9A825;
+$color-yellow-light:     #FFF59D;
+$color-yellow:           #FFEB3B;
+$color-yellow-dark:      #F9A825;
+
+/* Bootstrap Color Palette */
+$color-bootstrap-primary:     #007BFF;
+$color-bootstrap-secondary:   #6C757D;
+$color-bootstrap-success:     #28A745;
+$color-bootstrap-danger:      #DC3545;
+$color-bootstrap-warning:     #FFC107;
+$color-bootstrap-info:        #17A2B8;
+$color-bootstrap-light:       #F8F9FA;
+$color-bootstrap-dark:        #343A40;

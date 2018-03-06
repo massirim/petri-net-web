@@ -6,7 +6,7 @@
     <div class="bottom-menu container-fluid">
         <div class="row">
             <div class="col text-center">
-                <span class="tool-message" ng-bind="vm.toolMessage"></span>
+                <span class="tool-message" ng-class="vm.toolMessage.type" ng-bind="vm.toolMessage.text"></span>
             </div>
         </div>
         <div class="row">
@@ -15,7 +15,7 @@
                 <button class="btn btn-success" ng-click="vm.addTransition()"> <i class="far fa-square"></i> </button>
                 <button class="btn btn-info" ng-click="vm.addArc()"> <i class="fas fa-long-arrow-alt-right"></i> </button>
                 <button class="btn btn-danger" ng-click="vm.remove()"> <i class="far fa-times-circle"></i> </button>
-                <button class="btn btn-secondary" ng-click="vm.help()"> <i class="fas fa-question"></i> </button>
+                <button hidden class="btn btn-secondary" ng-click="vm.help()"> <i class="fas fa-question"></i> </button>
                 <button class="btn btn-dark" ng-click="vm.clear()"> <i class="far fa-file"></i> </button>
             </div>
         </div>
