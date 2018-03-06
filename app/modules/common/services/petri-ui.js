@@ -7,8 +7,8 @@
      * @description
      * description...
      **/
-    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory', 'transitionFactory'];
-    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory, transitionFactory) {
+    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory', 'transitionFactory', 'arcFactory'];
+    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory, transitionFactory, arcFactory) {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
@@ -19,17 +19,20 @@
 
         // Groups
         var _draw = {};
+        var _elements = {};
         var _nodes = {};
         var _places = {};
         var _transitions = {};
         var _arcs = {};
-        var _markers = {};
 
         // Aux
         var _isRemoveOn = false;
         var _connectClicksCount = 0;
         var _sourceElement = {};
         var _targetElement = {};
+        var _firstClickCallback = function() {};
+        var _secondClickCallback = function() {};
+        var _wrongClickCallback = function() {};
 
         return service;
 
@@ -121,15 +124,17 @@
          * @description
          * description...
          **/
-        function toggleRemoveEvent() {
+        function toggleRemoveEvent(activeCallback, inactiveCallback) {
             if (_isRemoveOn) {
                 _nodes.off('click');
                 _nodes.off('touchend');
                 _isRemoveOn = false;
+                inactiveCallback
             } else {
                 _nodes.click(_removeHandler);
                 _nodes.touchend(_removeHandler);
                 _isRemoveOn = true;
+                activeCallback();
             }
         }
 
@@ -158,43 +163,58 @@
          * @description
          * description...
          **/
-        function activateConnect() {
+        function activateConnect(firstClickCallback, secondClickCallback, wrongClickCallback) {
+            _firstClickCallback = firstClickCallback;
+            _secondClickCallback = secondClickCallback;
+            _wrongClickCallback = wrongClickCallback;
             _nodes.click(_connectHandler);
             _nodes.touchend(_connectHandler);
         }
 
         function _connectHandler(event) {
-            if (_connectClicksCount === 0) {
-                _sourceElement = SVG.get(event.target.id);
-                _connectClicksCount++;
-            } else {
-                _targetElement = SVG.get(event.target.id);
-                _connect();
-                _connectClicksCount = 0;
-                _nodes.off('click');
-                _nodes.off('touchend');
+            // Select the first element to avoid clicks on labels or tokens
+            var clickTarget = SVG.get(event.target.id).parent().first();
+
+            if (_connectClicksCount === 0) { // Click on source element
+                // Only circles and rects can be connected
+                if (clickTarget.node.tagName === 'circle' || clickTarget.node.tagName === 'rect') {
+                    _sourceElement = clickTarget;
+                    _connectClicksCount++;
+                    _firstClickCallback();
+                    console.log("first click");
+                }
+            } else { // Click on target element
+                // Same type elements cannot be connected
+                if (clickTarget.node.tagName === _sourceElement.node.tagName) {
+                    _wrongClickCallback();
+                    console.log("wrong click");
+                }
+                else {
+                    _targetElement = clickTarget;
+                    _newArc();
+
+                    _secondClickCallback();
+                    console.log("second click");
+                    _connectClicksCount = 0;
+                    _firstClickCallback = function() {};
+                    _secondClickCallback = function() {};
+                    _wrongClickCallback = function() {};
+                    _nodes.off('click');
+                    _nodes.off('touchend');
+                }
             }
         }
 
-        function _connect() {
+        function _newArc() {
             var sourceType = _sourceElement.node.localName;
             var sourceId = _sourceElement.node.id;
             var targetType = _targetElement.node.localName;
             var targetId = _targetElement.node.id;
 
             if( petriLogicService.isValidArc(sourceType, targetType) ) {
-                var newConn = _sourceElement.connectable({
-                    sourceAttach: 'perifery',
-                    targetAttach: 'perifery',
-                    type: 'default',
-                    container: _arcs,
-                    markers: _markers,
-                }, _targetElement);
+                var newConn = arcFactory.newArc(_arcs, _sourceElement, _targetElement);
 
-                newConn.setMarker('default', _markers);
-                newConn.connector.attr(configFactory.get().nodeStyle.arc);
-
-                petriLogicService.addArc(newConn.connector.node.id, {
+                petriLogicService.addArc(newConn.element.node.id, {
                     sourceId: sourceId,
                     targetId: targetId,
                     value: 1
@@ -221,6 +241,9 @@
             _connectClicksCount = 0;
             _sourceElement = {};
             _targetElement = {};
+            _firstClickCallback = function() {};
+            _secondClickCallback = function() {};
+            _wrongClickCallback = function() {};
 
             petriLogicService.reset();
         }
@@ -239,11 +262,11 @@
 
         function _checkGroups() {
             if ( angular.equals(_draw, {}) ) return;
-            if ( angular.equals(_nodes, {}) ) _nodes = _draw.group();
+            if ( angular.equals(_elements, {}) ) _elements = _draw.group();
+            if ( angular.equals(_nodes, {}) ) _nodes = _elements.group();
             if ( angular.equals(_places, {}) ) _places = _nodes.group();
             if ( angular.equals(_transitions, {}) ) _transitions = _nodes.group();
-            if ( angular.equals(_arcs, {}) ) _arcs = _draw.group();
-            if ( angular.equals(_markers, {}) ) _markers = _draw.group();
+            if ( angular.equals(_arcs, {}) ) _arcs = _elements.group();
         }
     }
 

@@ -49,6 +49,7 @@
          **/
         function addPlace(id, data) {
             _places[id] = data;
+            console.log(_places);
         }
 
         /** TODO
@@ -62,6 +63,7 @@
          **/
         function addTransition(id, data) {
             _transitions[id] = data;
+            console.log(_transitions);
         }
 
         /** TODO
@@ -75,6 +77,7 @@
          **/
         function addArc(id, data) {
             _arcs[id] = data;
+            console.log(_arcs);
         }
 
         /** TODO

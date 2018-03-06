@@ -6,6 +6,11 @@
     <div class="bottom-menu container-fluid">
         <div class="row">
             <div class="col text-center">
+                <span class="tool-message" ng-bind="vm.toolMessage"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
                 <button class="btn btn-success" ng-click="vm.addPlace()"> <i class="far fa-circle"></i> </button>
                 <button class="btn btn-success" ng-click="vm.addTransition()"> <i class="far fa-square"></i> </button>
                 <button class="btn btn-info" ng-click="vm.addArc()"> <i class="fas fa-long-arrow-alt-right"></i> </button>

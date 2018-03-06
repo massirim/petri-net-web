@@ -6,8 +6,8 @@
      * @name petriNet.common.controller:PlaygroundController
      * @description Playground controller
      **/
-    playgroundController.$inject = ['petriUiService'];
-    function playgroundController(petriUiService) {
+    playgroundController.$inject = ['$scope', 'petriUiService'];
+    function playgroundController($scope, petriUiService) {
         var vm = this;
 
         vm.addPlace = addPlace;
@@ -18,6 +18,7 @@
         vm.clear = clear;
 
         vm.backgroundText = 'PetriNet Playground';
+        vm.toolMessage = "";
 
         _init();
 
@@ -79,7 +80,17 @@
          * description...
          **/
         function addArc() {
-            petriUiService.activateConnect();
+            vm.toolMessage = "Click on an element to be the SOURCE...";
+            petriUiService.activateConnect(function firtClick() {
+                vm.toolMessage = "Click on a diferent type of element to be the TARGET...";
+                $scope.$digest();
+            }, function secondClick() {
+                vm.toolMessage = "";
+                $scope.$digest();
+            }, function wrongClick() {
+                vm.toolMessage = "The source and target cannot be the same type!";
+                $scope.$digest();
+            });
         }
 
         /** TODO
