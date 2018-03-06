@@ -79,6 +79,7 @@
                 tempPath = container.path(tempPath);
                 var pointStart =  tempPath.pointAt((source.rbox().height / 2));
                 var pointEnd =  tempPath.pointAt(tempPath.length() - (source.rbox().height / 1.7));
+                tempPath.remove();
                 coordinates.x1 = pointStart.x;
                 coordinates.y1 = pointStart.y;
                 coordinates.x2 = pointEnd.x;

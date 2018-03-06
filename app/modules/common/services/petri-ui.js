@@ -136,23 +136,26 @@
                 _elements.click(_removeHandler);
                 _elements.touchend(_removeHandler);
                 _isRemoveOn = true;
-                console.log('deactivated')
             }
         }
 
         function _removeHandler(event) {
-            var elementId = event.target.id;
-            var elementType = event.target.tagName;
-            var element = SVG.get(elementId);
-            element.remove();
+            // Select the first element to avoid clicks on labels or tokens
+            var element = SVG.get(event.target.id).parent().first();
+            var elementId = element.node.id;
+            var elementType = element.node.tagName;
 
-            var arcsToRemove = petriLogicService.remove(elementType, elementId);
+            if(elementType == 'circle' || elementType == 'rect' || elementType == 'path') {
+                element.parent().remove();
 
-            if (arcsToRemove.length > 0) {
-                angular.forEach(arcsToRemove, function (arcId) {
-                    var arcElem = SVG.get(arcId);
-                    arcElem.remove();
-                });
+                var arcsToRemove = petriLogicService.remove(elementType, elementId);
+
+                if (arcsToRemove.length > 0) {
+                    angular.forEach(arcsToRemove, function (arcId) {
+                        var arcElem = SVG.get(arcId);
+                        arcElem.remove();
+                    });
+                }
             }
         }
 

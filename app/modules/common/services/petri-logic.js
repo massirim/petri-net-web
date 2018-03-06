@@ -49,7 +49,6 @@
          **/
         function addPlace(id, data) {
             _places[id] = data;
-            console.log(_places);
         }
 
         /** TODO
@@ -63,7 +62,6 @@
          **/
         function addTransition(id, data) {
             _transitions[id] = data;
-            console.log(_transitions);
         }
 
         /** TODO
@@ -77,7 +75,6 @@
          **/
         function addArc(id, data) {
             _arcs[id] = data;
-            console.log(_arcs);
         }
 
         /** TODO
@@ -125,6 +122,8 @@
                     isNode = false;
                     break;
             }
+
+            delete elementList[elementId];
 
             // If element is'n a node, theres no arc to remove
             if (isNode) {
