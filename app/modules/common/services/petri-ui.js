@@ -215,11 +215,11 @@
                 },
                 nodeSize: {
                     place: {
-                        diameter: 100
+                        diameter: 50
                     },
                     transition: {
-                        width: 20,
-                        height: 100
+                        width: 10,
+                        height: 50
                     }
                 }
             };
