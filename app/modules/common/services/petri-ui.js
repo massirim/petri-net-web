@@ -12,6 +12,7 @@
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
+            newArc: newArc,
             newTransition: newTransition,
             toggleRemove: toggleRemove,
             activateConnect: activateConnect
@@ -72,11 +73,13 @@
             tokens = tokens || 0;
 
             var center = _centerPosition();
-            var newPlaceElement = placeFactory.newPlace(_places, center.x, center.y, label, tokens);
+            var placeElement = placeFactory.newPlace(_places, center.x, center.y, label, tokens);
             // Informs the logic service that a new place was created
-            petriLogicService.addPlace(newPlaceElement.node.id, {
+            petriLogicService.addPlace(placeElement.node.id, {
                 tokens: tokens
             });
+
+            return placeElement;
         }
 
         /** TODO
@@ -96,6 +99,8 @@
             var transitionElement = transitionFactory.newTransition(_transitions, center.x, center.y, label);
             // Informs the logic service that a new transition was created
             petriLogicService.addTransition(transitionElement.node.id, {});
+
+            return transitionElement;
         }
 
         /**
@@ -212,6 +217,23 @@
 
             if( petriLogicService.isValidArc(sourceType, targetType) ) {
                 var newConn = arcFactory.newArc(_arcs, _sourceElement, _targetElement);
+
+                petriLogicService.addArc(newConn.element.node.id, {
+                    sourceId: sourceId,
+                    targetId: targetId,
+                    value: 1
+                });
+            }
+        }
+
+        function newArc(source, target) {
+            var sourceType = source.node.localName;
+            var sourceId = source.node.id;
+            var targetType = target.node.localName;
+            var targetId = target.node.id;
+
+            if( petriLogicService.isValidArc(sourceType, targetType) ) {
+                var newConn = arcFactory.newArc(_arcs, source, target);
 
                 petriLogicService.addArc(newConn.element.node.id, {
                     sourceId: sourceId,

@@ -6,8 +6,8 @@
      * @name petriNet.common.controller:PlaygroundController
      * @description Playground controller
      **/
-    playgroundController.$inject = ['$scope', 'petriUiService'];
-    function playgroundController($scope, petriUiService) {
+    playgroundController.$inject = ['$scope', '$timeout', 'petriUiService', 'settings'];
+    function playgroundController($scope, $timeout, petriUiService, settings) {
         var vm = this;
 
         vm.addPlace = addPlace;
@@ -27,13 +27,23 @@
         ///// Functions /////
         function _init() {
             petriUiService.newDraw('Paper');
-            //_mock();
+            if (settings.enviroment === 'PRD') {
+                _mock();
+            }
         }
 
         function _mock() {
-            petriUiService.newPlace();
-            petriUiService.newPlace();
-            petriUiService.newPlace();
+            $timeout(function () {
+                var p1 = petriUiService.newPlace('P1', 3);
+                var p2 = petriUiService.newPlace('P2');
+                var t1 = petriUiService.newTransition('T1');
+
+                p1.parent().cx(p1.parent().x() - 130);
+                p2.parent().cx(p2.parent().x() + 130);
+
+                petriUiService.newArc(p1, t1);
+                petriUiService.newArc(t1, p2);
+            }, 100);
         }
 
         /** TODO
