@@ -123,12 +123,14 @@
                         vm.activeTool.message = 'Select the TARGET element';
                     } else {
                         _arcTarget = petriGraphicService.getElementById(event.target.id);
-                        petriGraphicService.newArc(_arcSource, _arcTarget);
+                        var value = window.prompt('Arc value', '1');
+                        value = value - 0;
+                        petriGraphicService.newArc(_arcSource, _arcTarget, value);
                         _resetTools();
                     }
                     $scope.$digest();
                 });
-                $scope.$digest();
+                try { $scope.$digest(); } catch (e) { console.log('Digest in progress...'); }
             } else {
                 _resetTools()
             }
@@ -154,7 +156,7 @@
                     _resetTools()
                     $scope.$digest();
                 });
-                $scope.$digest();
+                try { $scope.$digest(); } catch (e) { console.log('Digest in progress...'); }
             } else {
                 _resetTools()
             }

@@ -132,20 +132,21 @@
             };
         }
 
-        function newArc(source, target) {
-            console.log("Arc between", source, target);
+        function newArc(source, target, value) {
+            source = source.parent().first();
+            target = target.parent().first();
             var sourceType = source.node.localName;
             var sourceId = source.node.id;
             var targetType = target.node.localName;
             var targetId = target.node.id;
 
             if( petriLogicService.isValidArc(sourceType, targetType) ) {
-                var newConn = arcFactory.newArc(_arcs, source, target);
+                var newConn = arcFactory.newArc(_arcs, source, target, value);
 
                 petriLogicService.addArc(newConn.element.node.id, {
                     sourceId: sourceId,
                     targetId: targetId,
-                    value: 1
+                    value: value
                 });
             }
         }
