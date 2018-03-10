@@ -3,12 +3,12 @@
 
     /** TODO
      * @ngdoc service
-     * @name petriNet.common.service:petriUiService
+     * @name petriNet.common.service:petriGraphicService
      * @description
      * description...
      **/
-    petriUiService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory', 'transitionFactory', 'arcFactory'];
-    function petriUiService(petriLogicService, configFactory, placeFactory, svgAssetsFactory, transitionFactory, arcFactory) {
+    petriGraphicService.$inject = ['petriLogicService', 'configFactory', 'placeFactory', 'svgAssetsFactory', 'transitionFactory', 'arcFactory'];
+    function petriGraphicService(petriLogicService, configFactory, placeFactory, svgAssetsFactory, transitionFactory, arcFactory) {
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
@@ -42,7 +42,7 @@
         /**
          * @ngdoc method
          * @name newDraw
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @param {String} element ID of the html element to insert the SVG element.
          * @param {int | string} width Width to spawn the SVG element.
          * @param {int | string} height Height to spawn the SVG element.
@@ -61,7 +61,7 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @param {type} param description...
          * @returns {type} description...
          * @description
@@ -85,7 +85,7 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @param {type} param description...
          * @returns {type} description...
          * @description
@@ -106,7 +106,7 @@
         /**
          * @ngdoc method
          * @name _initialPosition
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @returns {Object} Coordinates to the center of the SVG element
          * @description
          * Evaluate the coordinates to the SVG element center position
@@ -125,7 +125,7 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @param {type} param description...
          * @returns {type} description...
          * @description
@@ -167,7 +167,7 @@
         /** TODO
          * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.service:petriUiService
+         * @methodOf petriNet.common.service:petriGraphicService
          * @param {type} param description...
          * @returns {type} description...
          * @description
@@ -294,5 +294,5 @@
         }
     }
 
-    angular.module('petriNet.common').service('petriUiService', petriUiService);
+    angular.module('petriNet.common').service('petriGraphicService', petriGraphicService);
 })();

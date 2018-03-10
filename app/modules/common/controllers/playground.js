@@ -6,8 +6,8 @@
      * @name petriNet.common.controller:PlaygroundController
      * @description Playground controller
      **/
-    playgroundController.$inject = ['$scope', '$timeout', 'petriUiService', 'settings'];
-    function playgroundController($scope, $timeout, petriUiService, settings) {
+    playgroundController.$inject = ['$scope', '$timeout', 'petriGraphicService', 'settings'];
+    function playgroundController($scope, $timeout, petriGraphicService, settings) {
         var vm = this;
 
         vm.addPlace = addPlace;
@@ -26,7 +26,7 @@
 
         ///// Functions /////
         function _init() {
-            petriUiService.newDraw('Paper');
+            petriGraphicService.newDraw('Paper');
             if (settings.enviroment === 'PRD') {
                 _mock();
             }
@@ -34,15 +34,15 @@
 
         function _mock() {
             $timeout(function () {
-                var p1 = petriUiService.newPlace('P1', 3);
-                var p2 = petriUiService.newPlace('P2');
-                var t1 = petriUiService.newTransition('T1');
+                var p1 = petriGraphicService.newPlace('P1', 3);
+                var p2 = petriGraphicService.newPlace('P2');
+                var t1 = petriGraphicService.newTransition('T1');
 
                 p1.parent().cx(p1.parent().x() - 130);
                 p2.parent().cx(p2.parent().x() + 130);
 
-                petriUiService.newArc(p1, t1);
-                petriUiService.newArc(t1, p2);
+                petriGraphicService.newArc(p1, t1);
+                petriGraphicService.newArc(t1, p2);
             }, 100);
         }
 
@@ -61,7 +61,7 @@
                 var tokens = window.prompt('Tokens quantity', '0');
                 if( tokens !== null) {
                     tokens = tokens - 0; // String to number
-                    petriUiService.newPlace(label, tokens);
+                    petriGraphicService.newPlace(label, tokens);
                 }
             }
         }
@@ -78,7 +78,7 @@
         function addTransition() {
             var label = window.prompt('Transition label (Leave it blank for no label)');
             if( label !== null) {
-                petriUiService.newTransition(label);
+                petriGraphicService.newTransition(label);
             }
         }
 
@@ -94,7 +94,7 @@
         function addArc() {
             vm.toolMessage.type = _activeTool = 'arc';
             vm.toolMessage.text = 'Click on an element to be the SOURCE...';
-            petriUiService.activateConnect(function firtClick() {
+            petriGraphicService.activateConnect(function firtClick() {
                 vm.toolMessage.text = 'Click on a diferent type of element to be the TARGET...';
                 $scope.$digest();
             }, function secondClick() {
@@ -127,7 +127,7 @@
                 vm.toolMessage.text = 'Click on an element to DELETE it';
             }
 
-            petriUiService.toggleRemove();
+            petriGraphicService.toggleRemove();
         }
 
         /** TODO
@@ -160,7 +160,7 @@
          * description...
          **/
         function clear() {
-            petriUiService.newDraw('Paper');
+            petriGraphicService.newDraw('Paper');
         }
     }
 
