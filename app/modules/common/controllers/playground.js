@@ -13,7 +13,7 @@
         vm.addPlace = addPlace;
         vm.addTransition = addTransition;
         vm.addArc = addArc;
-        vm.remove = remove;
+        vm.removeElement = removeElement;
         vm.clear = clear;
 
         vm.backgroundText = 'PetriNet Playground';
@@ -27,9 +27,30 @@
         ///// Functions /////
         function _init() {
             petriGraphicService.newDraw('Paper');
+            _initKeyBindings();
             if (settings.enviroment === 'PRD') {
                 _mock();
             }
+        }
+
+        function _initKeyBindings() {
+            angular.element(document).keydown(function (event) {
+                // 80 = p | 84 = t | 65 = a | 82 = r
+                switch (event.keyCode) {
+                    case 80:
+                        vm.addPlace();
+                        break;
+                    case 84:
+                        vm.addTransition();
+                        break;
+                    case 65:
+                        vm.addArc();
+                        break;
+                    case 82:
+                        vm.removeElement();
+                        break;
+                }
+            });
         }
 
         function _mock() {
@@ -92,7 +113,7 @@
          * description...
          **/
         function addArc() {
-            if (vm.activeTool.type === '') {
+            if (!vm.activeTool.type) {
                 var nodes = petriGraphicService.getNodes();
                 vm.activeTool.type = 'arc';
                 vm.activeTool.message = 'Select the SOURCE element';
@@ -107,6 +128,7 @@
                     }
                     $scope.$digest();
                 });
+                $scope.$digest();
             } else {
                 _resetTools()
             }
@@ -121,8 +143,8 @@
          * @description
          * description...
          **/
-        function remove() {
-            if (vm.activeTool.type === '') {
+        function removeElement() {
+            if (!vm.activeTool.type) {
                 var elements = petriGraphicService.getElements();
                 vm.activeTool.type = 'remove';
                 vm.activeTool.message = 'Click to REMOVE an element';
@@ -132,6 +154,7 @@
                     _resetTools()
                     $scope.$digest();
                 });
+                $scope.$digest();
             } else {
                 _resetTools()
             }
@@ -139,11 +162,13 @@
 
         function _resetTools() {
             var elements = petriGraphicService.getElements();
+            var nodes = petriGraphicService.getNodes();
             vm.activeTool.type = '';
             vm.activeTool.message = '';
             _arcSource = null;
             _arcTarget = null;
             elements.off('click');
+            nodes.off('click');
         }
 
         /** TODO
