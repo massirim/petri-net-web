@@ -35,7 +35,8 @@
                 .draggy()
                 .rect(width, height)
                 .move(x, y)
-                .attr(style);
+                .attr(style)
+                .addClass('transition');
 
             svgAssetsFactory.addLabel(transitionElement, label);
             if (hasShadow)

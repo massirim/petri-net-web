@@ -36,7 +36,8 @@
                 .draggy()
                 .circle(diameter)
                 .move(x, y)
-                .attr(style);
+                .attr(style)
+                .addClass('place');
 
             setTokens(placeElement, tokens);
             svgAssetsFactory.addLabel(placeElement, label);

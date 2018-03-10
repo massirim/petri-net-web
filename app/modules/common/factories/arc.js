@@ -56,7 +56,12 @@
 
                 // Create the arc element or update it
                 if(!arc.element){
-                    arc.element = container.group().path(linePath).stroke('#000').attr(configFactory.get().nodeStyle.arc);
+                    arc.element = container
+                        .group()
+                        .path(linePath)
+                        .stroke('#000')
+                        .attr(configFactory.get().nodeStyle.arc)
+                        .addClass('arc');
                     arc.element.marker('end', 10, 6, function (add) {
                         add.path("M 0 0 L 6 3 L 0 6 z");
                     });
