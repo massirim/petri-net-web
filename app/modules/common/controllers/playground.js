@@ -14,13 +14,13 @@
         vm.addTransition = addTransition;
         vm.addArc = addArc;
         vm.remove = remove;
-        vm.help = help;
         vm.clear = clear;
 
         vm.backgroundText = 'PetriNet Playground';
-        vm.toolMessage = {};
+        vm.activeTool = {};
 
-        var _activeTool = '';
+        var _arcSource = null;
+        var _arcTarget = null
 
         _init();
 
@@ -92,19 +92,24 @@
          * description...
          **/
         function addArc() {
-            vm.toolMessage.type = _activeTool = 'arc';
-            vm.toolMessage.text = 'Click on an element to be the SOURCE...';
-            petriGraphicService.activateConnect(function firtClick() {
-                vm.toolMessage.text = 'Click on a diferent type of element to be the TARGET...';
-                $scope.$digest();
-            }, function secondClick() {
-                vm.toolMessage.text = '';
-                $scope.$digest();
-            }, function wrongClick() {
-                vm.toolMessage.text = 'The source and target cannot be the same type! Select another element...';
-                _activeTool = '';
-                $scope.$digest();
-            });
+            if (vm.activeTool.type === '') {
+                var nodes = petriGraphicService.getNodes();
+                vm.activeTool.type = 'arc';
+                vm.activeTool.message = 'Select the SOURCE element';
+                nodes.click(function (event) {
+                    if(!_arcSource) {
+                        _arcSource = petriGraphicService.getElementById(event.target.id);
+                        vm.activeTool.message = 'Select the TARGET element';
+                    } else {
+                        _arcTarget = petriGraphicService.getElementById(event.target.id);
+                        petriGraphicService.newArc(_arcSource, _arcTarget);
+                        _resetTools();
+                    }
+                    $scope.$digest();
+                });
+            } else {
+                _resetTools()
+            }
         }
 
         /** TODO
@@ -117,37 +122,28 @@
          * description...
          **/
         function remove() {
-            vm.toolMessage.type = 'remove';
-            if(_activeTool === 'remove') {
-                _activeTool = '';
-                vm.toolMessage.text = '';
+            if (vm.activeTool.type === '') {
+                var elements = petriGraphicService.getElements();
+                vm.activeTool.type = 'remove';
+                vm.activeTool.message = 'Click to REMOVE an element';
+                elements.click(function (event) {
+                    var element = petriGraphicService.getElementById(event.target.id);
+                    petriGraphicService.remove(element);
+                    _resetTools()
+                    $scope.$digest();
+                });
+            } else {
+                _resetTools()
             }
-            else {
-                _activeTool = 'remove';
-                vm.toolMessage.text = 'Click on an element to DELETE it';
-            }
-
-            petriGraphicService.toggleRemove();
         }
 
-        /** TODO
-         * @ngdoc method
-         * @name methodName
-         * @methodOf petriNet.common.controller:PlaygroundController
-         * @param {type} param description...
-         * @returns {type} description...
-         * @description
-         * description...
-         **/
-        function help() {
-            alert(
-                '>> Resize:\n' +
-                '- Pinch w/ 2 fingers\n' +
-                '- Mouse scroll\n\n' +
-                '>> Move\n' +
-                '- Hold with 2 fingers and move\n' +
-                '- Click on background and drag'
-            );
+        function _resetTools() {
+            var elements = petriGraphicService.getElements();
+            vm.activeTool.type = '';
+            vm.activeTool.message = '';
+            _arcSource = null;
+            _arcTarget = null;
+            elements.off('click');
         }
 
         /** TODO

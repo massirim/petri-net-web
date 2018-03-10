@@ -12,28 +12,21 @@
         var service = {
             newDraw: newDraw,
             newPlace: newPlace,
-            newArc: newArc,
             newTransition: newTransition,
-            toggleRemove: toggleRemove,
-            activateConnect: activateConnect
+            newArc: newArc,
+            getElementById: getElementById,
+            getElements: getElements,
+            getNodes: getNodes,
+            remove: remove
         };
 
         // Groups
         var _draw = {};
-        var _elements = {};
-        var _nodes = {};
+        var _elements = {}; // Places, transitions and arcs
+        var _nodes = {}; // Only places and transitions
         var _places = {};
         var _transitions = {};
         var _arcs = {};
-
-        // Aux
-        var _isRemoveOn = false;
-        var _connectClicksCount = 0;
-        var _sourceElement = {};
-        var _targetElement = {};
-        var _firstClickCallback = function() {};
-        var _secondClickCallback = function() {};
-        var _wrongClickCallback = function() {};
 
         return service;
 
@@ -51,11 +44,32 @@
          **/
         function newDraw(element, width, height) {
             if ( angular.equals(_draw, {}) ) {
+                // New SVG and groups of elements
                 _draw = SVG(element).size(width || '100%', height || '100%').panZoom(configFactory.get().zoom);
-                _checkGroups();
+            } else {
+                _centerView();
+                _draw.zoom(1);
+                _draw.clear();
+                // Clean all data in logic service
+                petriLogicService.reset();
             }
-            else
-                _resetService();
+            _elements = _draw.group();
+            _nodes = _elements.group();
+            _places = _nodes.group();
+            _transitions = _nodes.group();
+            _arcs = _elements.group();
+        }
+
+        function _centerView() {
+            if ( angular.equals(_draw, {}) ) return;
+            if ( angular.isUndefined(_draw.node.attributes.viewBox) ) return;
+
+            var viewBox = _draw.node.attributes.viewBox.value || '0 0 0 0';
+            viewBox = viewBox.split(' ');
+            viewBox[0] = '0';
+            viewBox[1] = '0';
+            viewBox = viewBox.join(' ');
+            _draw.node.attributes.viewBox.value = viewBox;
         }
 
         /** TODO
@@ -68,11 +82,9 @@
          * description...
          **/
         function newPlace(label, tokens) {
-            _checkGroups();
-            _resetTools();
+            var center = _centerPosition();
             tokens = tokens || 0;
 
-            var center = _centerPosition();
             var placeElement = placeFactory.newPlace(_places, center.x, center.y, label, tokens);
             // Informs the logic service that a new place was created
             petriLogicService.addPlace(placeElement.node.id, {
@@ -91,11 +103,9 @@
          * @description
          * description...
          **/
-        function newTransition(label) {
-            _checkGroups();
-            _resetTools();
-
+        function newTransition(x, y, label) {
             var center = _centerPosition();
+
             var transitionElement = transitionFactory.newTransition(_transitions, center.x, center.y, label);
             // Informs the logic service that a new transition was created
             petriLogicService.addTransition(transitionElement.node.id, {});
@@ -122,111 +132,8 @@
             };
         }
 
-        /** TODO
-         * @ngdoc method
-         * @name methodName
-         * @methodOf petriNet.common.service:petriGraphicService
-         * @param {type} param description...
-         * @returns {type} description...
-         * @description
-         * description...
-         **/
-        function toggleRemove(activeCallback, inactiveCallback) {
-            _resetTools();
-            if (_isRemoveOn) {
-                _elements.off('click');
-                _elements.off('touchend');
-                _isRemoveOn = false;
-            } else {
-                _elements.click(_removeHandler);
-                _elements.touchend(_removeHandler);
-                _isRemoveOn = true;
-            }
-        }
-
-        function _removeHandler(event) {
-            // Select the first element to avoid clicks on labels or tokens
-            var element = SVG.get(event.target.id).parent().first();
-            var elementId = element.node.id;
-            var elementType = element.node.tagName;
-
-            if(elementType == 'circle' || elementType == 'rect' || elementType == 'path') {
-                element.parent().remove();
-
-                var arcsToRemove = petriLogicService.remove(elementType, elementId);
-
-                if (arcsToRemove.length > 0) {
-                    angular.forEach(arcsToRemove, function (arcId) {
-                        var arcElem = SVG.get(arcId);
-                        arcElem.remove();
-                    });
-                }
-            }
-        }
-
-        /** TODO
-         * @ngdoc method
-         * @name methodName
-         * @methodOf petriNet.common.service:petriGraphicService
-         * @param {type} param description...
-         * @returns {type} description...
-         * @description
-         * description...
-         **/
-        function activateConnect(firstClickCallback, secondClickCallback, wrongClickCallback) {
-            _resetTools();
-            _firstClickCallback = firstClickCallback;
-            _secondClickCallback = secondClickCallback;
-            _wrongClickCallback = wrongClickCallback;
-            _nodes.click(_connectHandler);
-            _nodes.touchend(_connectHandler);
-        }
-
-        function _connectHandler(event) {
-            // Select the first element to avoid clicks on labels or tokens
-            var clickTarget = SVG.get(event.target.id).parent().first();
-
-            if (_connectClicksCount === 0) { // Click on source element
-                // Only circles and rects can be connected
-                if (clickTarget.node.tagName === 'circle' || clickTarget.node.tagName === 'rect') {
-                    _sourceElement = clickTarget;
-                    _connectClicksCount++;
-                    _firstClickCallback();
-                }
-            } else { // Click on target element
-                // Same type elements cannot be connected
-                if (clickTarget.node.tagName === _sourceElement.node.tagName) {
-                    _wrongClickCallback();
-                }
-                else {
-                    _targetElement = clickTarget;
-                    _newArc();
-
-                    _secondClickCallback();
-                    _nodes.off('click');
-                    _nodes.off('touchend');
-                }
-            }
-        }
-
-        function _newArc() {
-            var sourceType = _sourceElement.node.localName;
-            var sourceId = _sourceElement.node.id;
-            var targetType = _targetElement.node.localName;
-            var targetId = _targetElement.node.id;
-
-            if( petriLogicService.isValidArc(sourceType, targetType) ) {
-                var newConn = arcFactory.newArc(_arcs, _sourceElement, _targetElement);
-
-                petriLogicService.addArc(newConn.element.node.id, {
-                    sourceId: sourceId,
-                    targetId: targetId,
-                    value: 1
-                });
-            }
-        }
-
         function newArc(source, target) {
+            console.log("Arc between", source, target);
             var sourceType = source.node.localName;
             var sourceId = source.node.id;
             var targetType = target.node.localName;
@@ -243,54 +150,33 @@
             }
         }
 
-        function _resetService() {
-            if ( angular.equals(_draw, {}) ) return;
-
-            _centerView();
-            _draw.zoom(1);
-            _draw.clear();
-            _nodes = {};
-            _places = {};
-            _transitions = {};
-            _arcs = {};
-
-            _resetTools();
-
-            petriLogicService.reset();
+        function getElementById(elementId) {
+            return SVG.get(elementId);
         }
 
-        function _resetTools() {
-            _isRemoveOn = false;
-            _connectClicksCount = 0;
-            _sourceElement = {};
-            _targetElement = {};
-            _firstClickCallback = function() {};
-            _secondClickCallback = function() {};
-            _wrongClickCallback = function() {};
-
-            _elements.off('click');
-            _elements.off('touchend');
+        function getElements() {
+            return _elements;
         }
 
-        function _centerView() {
-            if ( angular.equals(_draw, {}) ) return;
-            if ( angular.isUndefined(_draw.node.attributes.viewBox) ) return;
-
-            var viewBox = _draw.node.attributes.viewBox.value || '0 0 0 0';
-            viewBox = viewBox.split(' ');
-            viewBox[0] = '0';
-            viewBox[1] = '0';
-            viewBox = viewBox.join(' ');
-            _draw.node.attributes.viewBox.value = viewBox;
+        function getNodes() {
+            return _nodes;
         }
 
-        function _checkGroups() {
-            if ( angular.equals(_draw, {}) ) return;
-            if ( angular.equals(_elements, {}) ) _elements = _draw.group();
-            if ( angular.equals(_nodes, {}) ) _nodes = _elements.group();
-            if ( angular.equals(_places, {}) ) _places = _nodes.group();
-            if ( angular.equals(_transitions, {}) ) _transitions = _nodes.group();
-            if ( angular.equals(_arcs, {}) ) _arcs = _elements.group();
+        function remove(element) {
+            var elementId = element.node.id;
+            var elementType = element.node.tagName;
+
+            if(elementType == 'circle' || elementType == 'rect' || elementType == 'path') {
+                element.parent().remove();
+
+                var arcsToRemove = petriLogicService.remove(elementType, elementId);
+                if (arcsToRemove.length > 0) {
+                    angular.forEach(arcsToRemove, function (arcId) {
+                        var arcContainer = SVG.get(arcId).parent();
+                        arcContainer.remove();
+                    });
+                }
+            }
         }
     }
 
