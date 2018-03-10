@@ -99,7 +99,7 @@
             }
 
             function _createValueBox() {
-                var assetsContainer = container.group();
+                var assetsContainer = arc.element.parent().group();
                 arc.valueBox = assetsContainer
                     .rect(20,20)
                     .stroke('#000')
