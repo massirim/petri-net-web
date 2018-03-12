@@ -8,6 +8,7 @@
      * description...
      **/
     arcFactory.$inject = ['configFactory'];
+
     function arcFactory(configFactory) {
         var factory = {
             newArc: newArc
@@ -29,6 +30,7 @@
             var arc = _drawArc();
 
             // Properties
+            arc.value = value || 1;
             arc.source = source;
             arc.target = target;
             arc.valueBox = null;
@@ -41,7 +43,7 @@
             /////
 
             function _init() {
-                if (value > 1) _createValueBox();
+                if (arc.value > 1) _createValueBox();
 
                 source.parent().on('dragmove', _updateArc);
                 target.parent().on('dragmove', _updateArc);
@@ -55,7 +57,7 @@
                     .stroke('#000')
                     .attr(configFactory.get().nodeStyle.arc)
                     .addClass('arc');
-                newArcElement.marker('end', 10, 6, function (add) {
+                newArcElement.marker('end', 10, 6, function(add) {
                     add.path("M 0 0 L 6 3 L 0 6 z");
                 });
 
@@ -78,35 +80,74 @@
                     x2: targetParent.cx(),
                     y2: targetParent.cy() - (targetParent.rbox().height / 2) + (target.rbox().height / 2)
                 };
+
+                // Creates an temporary line to make the definitive one start and finish at the right points
                 var tempPath = ["M", coordinates.x1, coordinates.y1, "L", coordinates.x2, coordinates.y2].join(' ');
                 tempPath = container.path(tempPath);
-                var pointStart =  tempPath.pointAt((source.rbox().height / 2));
-                var pointEnd =  tempPath.pointAt(tempPath.length() - (source.rbox().height / 1.7));
+                var pointStart = tempPath.pointAt((source.rbox().height / 2));
+                var pointEnd = tempPath.pointAt(tempPath.length() - (source.rbox().height / 1.7));
                 tempPath.remove();
+
+                // Update the coordinates with the data extracted from the temporary line
                 coordinates.x1 = pointStart.x;
                 coordinates.y1 = pointStart.y;
                 coordinates.x2 = pointEnd.x;
                 coordinates.y2 = pointEnd.y;
 
+                // Returns an string with the path to build the line
                 return ["M", coordinates.x1, coordinates.y1, "L", coordinates.x2, coordinates.y2].join(' ');
             }
 
             function _createValueBox() {
                 var assetsContainer = arc.parent().group();
                 arc.valueBox = assetsContainer
-                    .rect(20,20)
+                    .rect(20, 20)
                     .stroke('#000')
                     .fill('#fff');
                 arc.valueText = assetsContainer
-                    .text(value+"")
-                    .attr({'style': 'user-select:none;'});
+                    .text(arc.value + "")
+                    .attr({
+                        'style': 'user-select:none;'
+                    });
                 _updateValueBoxPosition();
             }
 
             function _updateValueBoxPosition() {
-                var arcCenter = arc.pointAt(arc.length()/2);
+                var arcCenter = arc.pointAt(arc.length() / 2);
                 arc.valueBox.cx(arcCenter.x).cy(arcCenter.y);
                 arc.valueText.cx(arcCenter.x).cy(arcCenter.y)
+            }
+
+            function animate(arc) {
+                var promise = new Promise(function(resolve) {
+                    var place, directionMultiplier;
+                    if (arc.source.node.tagName === 'circle') {
+                        // In this case tokens are withdrawn on place
+                        place = arc.source;
+                        directionMultiplier = -1;
+                    } else {
+                        // In this case tokens are deposited from place
+                        place = arc.target;
+                        directionMultiplier = 1;
+                    }
+
+                    var token = draw.circle(6).opacity(0);
+                    var animation = token.animate(1000).during(function(pos, morph, eased) {
+                        var position = arc.element.pointAt(eased * arc.element.length());
+                        token.center(position.x, position.y);
+                    });
+                    animation.once(0.01, function() {
+                        if (directionMultiplier === -1) place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
+                        token.opacity(1);
+                    });
+                    animation.once(0.99, function() {
+                        token.remove();
+                        console.log(place.getTokens(), arc.value, directionMultiplier);
+                        if (directionMultiplier === 1) place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
+                        resolve();
+                    });
+                });
+                return promise;
             }
         }
     }
