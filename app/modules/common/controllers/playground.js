@@ -56,15 +56,28 @@
 
         function _mock() {
             $timeout(function () {
-                var p1 = petriGraphicService.newPlace('P1', 3);
+                var p1 = petriGraphicService.newPlace('P1', 2);
                 var p2 = petriGraphicService.newPlace('P2');
                 var t1 = petriGraphicService.newTransition('T1');
 
                 p1.parent().cx(p1.parent().x() - 130);
                 p2.parent().cx(p2.parent().x() + 130);
 
-                petriGraphicService.newArc(p1, t1);
-                petriGraphicService.newArc(t1, p2, 2);
+                var a1 = petriGraphicService.newArc(p1, t1);
+                var a2 = petriGraphicService.newArc(t1, p2, 2);
+
+                $timeout(function () {
+                    a1.tokenAnimation()
+                        .then(function () {
+                            a2.tokenAnimation()
+                                .then(function () {
+                                    a1.tokenAnimation()
+                                        .then(function () {
+                                            a2.tokenAnimation()
+                                        });
+                                });
+                        });
+                }, 1000);
             }, 100);
         }
 

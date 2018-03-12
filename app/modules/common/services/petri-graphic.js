@@ -148,6 +148,8 @@
                     targetId: targetId,
                     value: value
                 });
+
+                return newConn;
             }
         }
 
