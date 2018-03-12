@@ -143,7 +143,7 @@
             if( petriLogicService.isValidArc(sourceType, targetType) ) {
                 var newConn = arcFactory.newArc(_arcs, source, target, value);
 
-                petriLogicService.addArc(newConn.element.node.id, {
+                petriLogicService.addArc(newConn.node.id, {
                     sourceId: sourceId,
                     targetId: targetId,
                     value: value

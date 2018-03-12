@@ -26,17 +26,13 @@
          * Creates an arrow between two elements.
          **/
         function newArc(container, source, target, value) {
-            /// Disclaimer ///
-            // The arc creation had to be encapsulated like a class to avoid
-            // unnecessary complexity
-            var arc = {};
+            var arc = _drawArc();
 
             // Properties
             arc.source = source;
             arc.target = target;
-            arc.element = null;
             arc.valueBox = null;
-            arc.value = null;
+            arc.valueText = null;
 
             _init();
 
@@ -45,39 +41,36 @@
             /////
 
             function _init() {
-                _drawArc();
+                if (value > 1) _createValueBox();
 
-                source.parent().on('dragmove', _drawArc);
-                target.parent().on('dragmove', _drawArc);
+                source.parent().on('dragmove', _updateArc);
+                target.parent().on('dragmove', _updateArc);
             }
 
             function _drawArc() {
-                var coordinates = _getCoordinates();
+                var linePath = _getArcPath();
+                var newArcElement = container
+                    .group()
+                    .path(linePath)
+                    .stroke('#000')
+                    .attr(configFactory.get().nodeStyle.arc)
+                    .addClass('arc');
+                newArcElement.marker('end', 10, 6, function (add) {
+                    add.path("M 0 0 L 6 3 L 0 6 z");
+                });
 
-                var linePath = ["M", coordinates.x1, coordinates.y1, "L", coordinates.x2, coordinates.y2].join(' ');
-
-                // Create the arc element or update it
-                if(!arc.element){
-                    arc.element = container
-                        .group()
-                        .path(linePath)
-                        .stroke('#000')
-                        .attr(configFactory.get().nodeStyle.arc)
-                        .addClass('arc');
-                    arc.element.marker('end', 10, 6, function (add) {
-                        add.path("M 0 0 L 6 3 L 0 6 z");
-                    });
-
-                    if (value > 1) _createValueBox();
-                } else {
-                    arc.element.plot(linePath);
-                    if (arc.valueBox) _updateValueBoxPosition();
-                }
+                return newArcElement;
             }
 
-            function _getCoordinates() {
-                var sourceParent = arc.source.parent();
-                var targetParent = arc.target.parent();
+            function _updateArc() {
+                var linePath = _getArcPath();
+                arc.plot(linePath);
+                if (arc.valueBox) _updateValueBoxPosition();
+            }
+
+            function _getArcPath() {
+                var sourceParent = source.parent();
+                var targetParent = target.parent();
 
                 var coordinates = {
                     x1: sourceParent.cx(),
@@ -95,25 +88,25 @@
                 coordinates.x2 = pointEnd.x;
                 coordinates.y2 = pointEnd.y;
 
-                return coordinates;
+                return ["M", coordinates.x1, coordinates.y1, "L", coordinates.x2, coordinates.y2].join(' ');
             }
 
             function _createValueBox() {
-                var assetsContainer = arc.element.parent().group();
+                var assetsContainer = arc.parent().group();
                 arc.valueBox = assetsContainer
                     .rect(20,20)
                     .stroke('#000')
                     .fill('#fff');
-                arc.value = assetsContainer
+                arc.valueText = assetsContainer
                     .text(value+"")
                     .attr({'style': 'user-select:none;'});
                 _updateValueBoxPosition();
             }
 
             function _updateValueBoxPosition() {
-                var arcCenter = arc.element.pointAt(arc.element.length()/2);
+                var arcCenter = arc.pointAt(arc.length()/2);
                 arc.valueBox.cx(arcCenter.x).cy(arcCenter.y);
-                arc.value.cx(arcCenter.x).cy(arcCenter.y)
+                arc.valueText.cx(arcCenter.x).cy(arcCenter.y)
             }
         }
     }

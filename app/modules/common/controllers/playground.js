@@ -28,9 +28,10 @@
         function _init() {
             petriGraphicService.newDraw('Paper');
             _initKeyBindings();
-            if (settings.enviroment === 'PRD') {
-                _mock();
-            }
+            _mock();
+            // if (settings.enviroment === 'PRD') {
+            //     _mock();
+            // }
         }
 
         function _initKeyBindings() {
@@ -63,7 +64,7 @@
                 p2.parent().cx(p2.parent().x() + 130);
 
                 petriGraphicService.newArc(p1, t1);
-                petriGraphicService.newArc(t1, p2);
+                petriGraphicService.newArc(t1, p2, 2);
             }, 100);
         }
 
