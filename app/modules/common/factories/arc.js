@@ -7,9 +7,9 @@
      * @description
      * description...
      **/
-    arcFactory.$inject = ['configFactory'];
+    arcFactory.$inject = ['$q', 'configFactory'];
 
-    function arcFactory(configFactory) {
+    function arcFactory($q, configFactory) {
         var factory = {
             newArc: newArc
         };
@@ -35,6 +35,9 @@
             arc.target = target;
             arc.valueBox = null;
             arc.valueText = null;
+
+            // Methods
+            arc.tokenAnimation = tokenAnimation;
 
             _init();
 
@@ -118,36 +121,38 @@
                 arc.valueText.cx(arcCenter.x).cy(arcCenter.y)
             }
 
-            function animate(arc) {
-                var promise = new Promise(function(resolve) {
-                    var place, directionMultiplier;
-                    if (arc.source.node.tagName === 'circle') {
-                        // In this case tokens are withdrawn on place
-                        place = arc.source;
-                        directionMultiplier = -1;
-                    } else {
-                        // In this case tokens are deposited from place
-                        place = arc.target;
-                        directionMultiplier = 1;
-                    }
+            function tokenAnimation() {
+                var deferred = $q.defer();
+                var place, directionMultiplier;
+                if (arc.source.node.tagName === 'circle') {
+                    // In this case tokens are withdrawn from place
+                    place = arc.source;
+                    directionMultiplier = -1;
+                } else {
+                    // In this case tokens are deposited on place
+                    place = arc.target;
+                    directionMultiplier = 1;
+                }
 
-                    var token = draw.circle(6).opacity(0);
-                    var animation = token.animate(1000).during(function(pos, morph, eased) {
-                        var position = arc.element.pointAt(eased * arc.element.length());
-                        token.center(position.x, position.y);
-                    });
-                    animation.once(0.01, function() {
-                        if (directionMultiplier === -1) place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
-                        token.opacity(1);
-                    });
-                    animation.once(0.99, function() {
-                        token.remove();
-                        console.log(place.getTokens(), arc.value, directionMultiplier);
-                        if (directionMultiplier === 1) place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
-                        resolve();
-                    });
+                var token = arc.parent().circle(10).opacity(0);
+                var animation = token.animate(1000).during(function(pos, morph, eased) {
+                    var position = arc.pointAt(eased * arc.length());
+                    token.center(position.x, position.y);
                 });
-                return promise;
+                animation.once(0.01, function() {
+                    if (directionMultiplier === -1)
+                        place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
+                    token.opacity(1);
+                });
+                animation.once(0.99, function() {
+                    token.remove();
+                    if (directionMultiplier === 1)
+                        place.setTokens(place.getTokens() + (arc.value * directionMultiplier));
+                    setTimeout(function(){deferred.resolve();},200)
+
+                });
+
+                return deferred.promise;
             }
         }
     }
