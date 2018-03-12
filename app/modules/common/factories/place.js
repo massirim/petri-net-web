@@ -114,7 +114,7 @@
                 // Draw more dots if needed
                 for (var i = quantity - tokensCount; i > 0; i--) {
                     place.parent()
-                        .circle(5)
+                        .circle(10)
                         .addClass('token-dot')
                         .fill('#000')
                         .cx(place.cx())
