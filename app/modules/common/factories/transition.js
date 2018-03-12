@@ -25,24 +25,38 @@
          * description...
          **/
         function newTransition(container, x, y, label) {
-            var width = configFactory.get().nodeSize.transition.width;
-            var height = configFactory.get().nodeSize.transition.height;
-            var style = configFactory.get().nodeStyle.transition;
-            var hasShadow = configFactory.get().nodeStyle.transition.shadow;
+            var transition = _drawTransition();
 
-            var transitionElement = container
-                .group()
-                .draggy()
-                .rect(width, height)
-                .move(x, y)
-                .attr(style)
-                .addClass('transition');
+            _init();
 
-            svgAssetsFactory.addLabel(transitionElement, label);
-            if (hasShadow)
-                svgAssetsFactory.addDropShadow(transitionElement);
+            return transition;
 
-            return transitionElement;
+            ///// Functions /////
+            function _init() {
+                svgAssetsFactory.addLabel(transition, label);
+                var hasShadow = configFactory.get().nodeStyle.transition.shadow;
+                if (hasShadow)
+                    svgAssetsFactory.addDropShadow(transition);
+            }
+
+            /**
+             * Draw an transition element in the SVG and returns it
+             **/
+            function _drawTransition() {
+                var width = configFactory.get().nodeSize.transition.width;
+                var height = configFactory.get().nodeSize.transition.height;
+                var style = configFactory.get().nodeStyle.transition;
+
+                var transitionElement = container
+                    .group()
+                    .draggy()
+                    .rect(width, height)
+                    .move(x, y)
+                    .attr(style)
+                    .addClass('transition');
+
+                return transitionElement;
+            }
         }
     }
 
