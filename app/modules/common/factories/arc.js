@@ -30,6 +30,7 @@
             var arc = _drawArc();
 
             // Properties
+            arc.petriType = 'arc';
             arc.value = value || 1;
             arc.source = source;
             arc.target = target;
@@ -46,6 +47,12 @@
             /////
 
             function _init() {
+                if (arc.source.petriType === 'transition') {
+                    arc.source.outputs.push(arc);
+                } else {
+                    arc.target.inputs.push(arc);
+                }
+
                 if (arc.value > 1) _createValueBox();
 
                 source.parent().on('dragmove', _updateArc);
@@ -124,7 +131,7 @@
             function tokenAnimation() {
                 var deferred = $q.defer();
                 var place, directionMultiplier;
-                if (arc.source.node.tagName === 'circle') {
+                if (arc.source.petriType === 'place') {
                     // In this case tokens are withdrawn from place
                     place = arc.source;
                     directionMultiplier = -1;

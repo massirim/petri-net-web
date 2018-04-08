@@ -7,8 +7,8 @@
      * @description
      * description...
      **/
-    transition.$inject = ['configFactory', 'svgAssetsFactory'];
-    function transition(configFactory, svgAssetsFactory) {
+    transition.$inject = ['$q', 'configFactory', 'svgAssetsFactory'];
+    function transition($q, configFactory, svgAssetsFactory) {
         var factory = {
             newTransition: newTransition
         };
@@ -26,6 +26,13 @@
          **/
         function newTransition(container, x, y, label) {
             var transition = _drawTransition();
+
+            // Properties
+            transition.petriType = 'transition'
+            transition.inputs = [];
+            transition.outputs = [];
+            // Methods
+            transition.tokenAnimation = tokenAnimation;
 
             _init();
 
@@ -56,6 +63,37 @@
                     .addClass('transition');
 
                 return transitionElement;
+            }
+
+            /**
+             * Triggers the animations of input arcs and then output ones
+             **/
+            function tokenAnimation() {
+                var deferred = $q.defer();
+
+                _animateArcs(transition.inputs)
+                    .then(function() {
+                        _animateArcs(transition.outputs)
+                        .then(function() {
+                            deferred.resolve();
+                        });
+                    });
+
+                return deferred.promise;
+            }
+
+            function _animateArcs(arcs) {
+                var deferred = $q.defer();
+
+                angular.forEach(arcs, function (arc, index) {
+                    arc.tokenAnimation()
+                        .then(function () {
+                            if (index === arcs.length - 1)
+                                deferred.resolve();
+                        });
+                });
+
+                return deferred.promise;
             }
         }
     }

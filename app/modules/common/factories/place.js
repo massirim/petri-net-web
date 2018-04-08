@@ -18,6 +18,8 @@
 
         function newPlace(container, x, y, label, tokens) {
             var place = _drawPlace();
+            // Properties
+            place.petriType = 'place';
             // Methods
             place.getTokens = getTokens;
             place.setTokens = setTokens;
@@ -66,12 +68,12 @@
              * Returns the quantity of tokens in the actual place
              **/
             function setTokens(quantity) {
+                // Stops for invalid quantity values
+                if (quantity < 0 || tokensCount === quantity || typeof quantity !== 'number') return;
+
                 var tokensCount = _countTokenElements();
                 // Set the new tokens quantity
                 _tokens = quantity;
-
-                // Stops for invalid quantity values
-                if (quantity < 0 || tokensCount === quantity || typeof quantity !== 'number') return;
 
                 // Less than 4 means dot tokens should be drawn
                 // otherwise number tokens

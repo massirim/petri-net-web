@@ -17,7 +17,8 @@
             getElementById: getElementById,
             getElements: getElements,
             getNodes: getNodes,
-            remove: remove
+            remove: remove,
+            startSimulation: startSimulation
         };
 
         // Groups
@@ -135,9 +136,9 @@
         function newArc(source, target, value) {
             source = source.parent().first();
             target = target.parent().first();
-            var sourceType = source.node.localName;
+            var sourceType = source.petriType;
             var sourceId = source.node.id;
-            var targetType = target.node.localName;
+            var targetType = target.petriType;
             var targetId = target.node.id;
 
             if( petriLogicService.isValidArc(sourceType, targetType) ) {
@@ -167,9 +168,9 @@
 
         function remove(element) {
             var elementId = element.node.id;
-            var elementType = element.node.tagName;
+            var elementType = element.petriType;
 
-            if(elementType == 'circle' || elementType == 'rect' || elementType == 'path') {
+            if(elementType == 'place' || elementType == 'transition' || elementType == 'arc') {
                 element.parent().remove();
 
                 var arcsToRemove = petriLogicService.remove(elementType, elementId);
@@ -180,6 +181,16 @@
                     });
                 }
             }
+        }
+
+        function startSimulation() {
+            petriLogicService
+                .startSimulation(function (fireableTransitions) {
+                    angular.forEach(fireableTransitions, function (transitionId) {
+                        var transition = SVG.get(transitionId);
+                        transition.tokenAnimation();
+                    });
+                });
         }
     }
 

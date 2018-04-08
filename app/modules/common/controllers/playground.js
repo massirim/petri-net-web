@@ -15,6 +15,7 @@
         vm.addArc = addArc;
         vm.removeElement = removeElement;
         vm.clear = clear;
+        vm.startSimulation = startSimulation;
 
         vm.backgroundText = 'PetriNet Playground';
         vm.activeTool = {};
@@ -32,6 +33,10 @@
             // if (settings.enviroment === 'PRD') {
             //     _mock();
             // }
+        }
+
+        function startSimulation() {
+            petriGraphicService.startSimulation();
         }
 
         function _initKeyBindings() {
@@ -66,18 +71,12 @@
                 var a1 = petriGraphicService.newArc(p1, t1);
                 var a2 = petriGraphicService.newArc(t1, p2, 2);
 
-                $timeout(function () {
-                    a1.tokenAnimation()
-                        .then(function () {
-                            a2.tokenAnimation()
-                                .then(function () {
-                                    a1.tokenAnimation()
-                                        .then(function () {
-                                            a2.tokenAnimation()
-                                        });
-                                });
-                        });
-                }, 1000);
+                // $timeout(function () {
+                //     t1.tokenAnimation()
+                //         .then(function () {
+                //             t1.tokenAnimation();
+                //         });
+                // }, 1000);
             }, 100);
         }
 
@@ -137,10 +136,12 @@
                         vm.activeTool.message = 'Select the TARGET element';
                     } else {
                         _arcTarget = petriGraphicService.getElementById(event.target.id);
-                        var value = window.prompt('Arc value', '1');
-                        value = value - 0;
-                        petriGraphicService.newArc(_arcSource, _arcTarget, value);
-                        _resetTools();
+                        if(_arcTarget.petriType != _arcSource.petriType) {
+                            var value = window.prompt('Arc value', '1');
+                            value = value - 0;
+                            petriGraphicService.newArc(_arcSource, _arcTarget, value);
+                            _resetTools();
+                        }
                     }
                     $scope.$digest();
                 });
