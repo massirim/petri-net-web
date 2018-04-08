@@ -32,7 +32,8 @@
             transition.inputs = [];
             transition.outputs = [];
             // Methods
-            transition.tokenAnimation = tokenAnimation;
+            transition.animateInputArcs = animateInputArcs;
+            transition.animateOutputArcs = animateOutputArcs;
 
             _init();
 
@@ -66,17 +67,28 @@
             }
 
             /**
-             * Triggers the animations of input arcs and then output ones
+             * Triggers the animations of input arcs
              **/
-            function tokenAnimation() {
+            function animateInputArcs() {
                 var deferred = $q.defer();
 
                 _animateArcs(transition.inputs)
                     .then(function() {
-                        _animateArcs(transition.outputs)
-                        .then(function() {
                             deferred.resolve();
-                        });
+                    });
+
+                return deferred.promise;
+            }
+
+            /**
+             * Triggers the animations of output arcs
+             **/
+            function animateOutputArcs() {
+                var deferred = $q.defer();
+
+                _animateArcs(transition.outputs)
+                    .then(function() {
+                            deferred.resolve();
                     });
 
                 return deferred.promise;
@@ -85,6 +97,7 @@
             function _animateArcs(arcs) {
                 var deferred = $q.defer();
 
+                if (arcs.length < 1) deferred.resolve();
                 angular.forEach(arcs, function (arc, index) {
                     arc.tokenAnimation()
                         .then(function () {

@@ -40,16 +40,10 @@
             for (var transitionId in _transitions) {
                 var transition = _transitions[transitionId];
                 if( _isFireable(transition) ) {
-                    _triggerTransition(transition);
                     fireableTransitions.push(transitionId);
                 }
             }
-            // angular.forEach(_transitions, function (transition, id) {
-            //     if( _isFireable(transition) ) {
-            //         _triggerTransition(transition);
-            //         fireableTransitions.push(id);
-            //     }
-            // });
+            _triggerTransitions(fireableTransitions);
             callback(fireableTransitions);
         }
 
@@ -64,16 +58,24 @@
             return fireable;
         };
 
-        function _triggerTransition(transition) {
-            angular.forEach(transition.inputs, function (arcId) {
-                var arc = _arcs[arcId];
-                var source = _places[arc.sourceId];
-                source.tokens -= arc.value;
+        function _triggerTransitions(fireableTransitions) {
+            // Trigger all inputs, then all outputs
+            angular.forEach(fireableTransitions, function (transitionId) {
+                var transition = _transitions[transitionId];
+                angular.forEach(transition.inputs, function (arcId) {
+                    var arc = _arcs[arcId];
+                    var source = _places[arc.sourceId];
+                    source.tokens -= arc.value;
+                });
             });
-            angular.forEach(transition.outputs, function (arcId) {
-                var arc = _arcs[arcId];
-                var target = _places[arc.targetId];
-                target.tokens += arc.value;
+            // Outputs
+            angular.forEach(fireableTransitions, function (transitionId) {
+                var transition = _transitions[transitionId];
+                angular.forEach(transition.outputs, function (arcId) {
+                    var arc = _arcs[arcId];
+                    var target = _places[arc.targetId];
+                    target.tokens += arc.value;
+                });
             });
         }
 
@@ -181,19 +183,19 @@
                     if (arc.sourceId === elementId || arc.targetId === elementId) {
                         arcsToRemove.push(arcId);
                         delete _arcs[arcId];
-                        _removeArc(arcId)
+                        _removeArcReferences(arcId)
                     }
                 });
                 _log('Remove node')
                 return arcsToRemove;
             } else {
-                _removeArc(elementId)
+                _removeArcReferences(elementId)
                 _log('Remove arc')
                 return [];
             }
         }
 
-        function _removeArc(id) {
+        function _removeArcReferences(id) {
             angular.forEach(_transitions, function (transition) {
                 angular.forEach(transition.inputs, function (arcId, index) {
                     if (arcId == id)
