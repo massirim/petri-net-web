@@ -184,22 +184,20 @@
         }
 
         function startSimulation() {
-            petriLogicService
-                .startSimulation(function (fireableTransitions) {
-                    angular.forEach(fireableTransitions, function (transitionId, index) {
-                        var transition = SVG.get(transitionId);
-                        transition.animateInputArcs()
-                            .then(function () {
-                                // When the last transition finish, triggers the outputs
-                                if (index === fireableTransitions.length - 1) {
-                                    angular.forEach(fireableTransitions, function (transitionId) {
-                                        var transition = SVG.get(transitionId);
-                                        transition.animateOutputArcs();
-                                    });
-                                }
+            var fireableTransitions = petriLogicService.startSimulation();
+            angular.forEach(fireableTransitions, function (transitionId, index) {
+                var transition = SVG.get(transitionId);
+                transition.animateInputArcs()
+                    .then(function () {
+                        // When the last transition finish, triggers the outputs
+                        if (index === fireableTransitions.length - 1) {
+                            angular.forEach(fireableTransitions, function (transitionId) {
+                                var transition = SVG.get(transitionId);
+                                transition.animateOutputArcs();
                             });
+                        }
                     });
-                });
+            });
         }
     }
 

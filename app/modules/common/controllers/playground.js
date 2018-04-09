@@ -30,9 +30,6 @@
             petriGraphicService.newDraw('Paper');
             _initKeyBindings();
             _mock();
-            // if (settings.enviroment === 'PRD') {
-            //     _mock();
-            // }
         }
 
         function startSimulation() {
@@ -70,13 +67,6 @@
 
                 var a1 = petriGraphicService.newArc(p1, t1);
                 var a2 = petriGraphicService.newArc(t1, p2, 2);
-
-                // $timeout(function () {
-                //     t1.tokenAnimation()
-                //         .then(function () {
-                //             t1.tokenAnimation();
-                //         });
-                // }, 1000);
             }, 100);
         }
 

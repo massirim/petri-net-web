@@ -27,26 +27,46 @@
 
         ///// Functions /////
         /** TODO
-         * @ngdoc method
          * @name methodName
-         * @methodOf petriNet.common.service:petriLogicService
          * @param {type} param description...
          * @returns {type} description...
          * @description
          * description...
          **/
-        function startSimulation(callback) {
+        function startSimulation() {
             var fireableTransitions = [];
+            var allAffectedPlaces = {};
+            var concurrencyPlaces = {};
+            // angular.forEach bug
             for (var transitionId in _transitions) {
                 var transition = _transitions[transitionId];
-                if( _isFireable(transition) ) {
+                var data = _evaluateTransition(transition);
+                if (data.fireable) {
                     fireableTransitions.push(transitionId);
+                    // Saves the affected places in the all affected places list
+                    angular.forEach(data.affectedPlaces, function (place, placeId) {
+                        if ( !allAffectedPlaces[placeId] ) {
+                            allAffectedPlaces[placeId] = place;
+                        }
+                    });
+                    /** TODO
+                     * Verificar na lista dos places afetados quais estão ligados
+                     * a duas ou mais fireable transitions
+                     **/
                 }
             }
             _triggerTransitions(fireableTransitions);
-            callback(fireableTransitions);
+            return fireableTransitions;
         }
 
+        /**
+         * @name _isFireable
+         * @param {Object} transition - Transition to be evaluated
+         * @returns {Boolean}
+         * @description
+         * Check every source of arcs that input on transition and if they
+         * all have suficient tokens, returns true.
+         **/
         function _isFireable(transition) {
             var fireable = true;
             angular.forEach(transition.inputs, function (arcId) {
@@ -57,6 +77,28 @@
             });
             return fireable;
         };
+
+        function _evaluateTransition(transition) {
+            var data = {
+                fireable: true,
+                affectedPlaces: {}
+            }
+            angular.forEach(transition.inputs, function (arcId) {
+                var arc = _arcs[arcId];
+                var source = _places[arc.sourceId];
+                if (source.tokens < arc.value) {
+                    data.fireable = false;
+                    data.affectedPlaces[sourceId] = source;
+                }
+            });
+            return data;
+        };
+
+        function _evaluateConcurrency(affectedPlaces, allAffectedPlaces, concurrencyPlaces) {
+            angular.forEach(affectedPlaces, function (place, placeId) {
+                allAffectedPlaces
+            });
+        }
 
         function _triggerTransitions(fireableTransitions) {
             // Trigger all inputs, then all outputs
@@ -89,6 +131,8 @@
          * description...
          **/
         function addPlace(id, data) {
+            data.inputs = data.inputs || [];
+            data.outputs = data.outputs || [];
             _places[id] = data;
             _log('addPlace')
         }
@@ -183,7 +227,8 @@
                     if (arc.sourceId === elementId || arc.targetId === elementId) {
                         arcsToRemove.push(arcId);
                         delete _arcs[arcId];
-                        _removeArcReferences(arcId)
+                        _removeArcReferences(arcId, _places);
+                        _removeArcReferences(arcId, _transitions);
                     }
                 });
                 _log('Remove node')
@@ -195,15 +240,22 @@
             }
         }
 
-        function _removeArcReferences(id) {
-            angular.forEach(_transitions, function (transition) {
-                angular.forEach(transition.inputs, function (arcId, index) {
+        /**
+         * @name _removeArcReferences
+         * @param {String} id - Id of the arc to be removed.
+         * @param {Object} json - Internal petriLogicService _places or _transitions object.
+         * @description
+         * Searches for references to the id in the elements input and output arcs, and remove them
+         **/
+        function _removeArcReferences(id, json) {
+            angular.forEach(json, function (element) {
+                angular.forEach(element.inputs, function (arcId, index) {
                     if (arcId == id)
-                        transition.inputs.splice(index, 1);
+                        element.inputs.splice(index, 1);
                 });
-                angular.forEach(transition.outputs, function (arcId, index) {
+                angular.forEach(element.outputs, function (arcId, index) {
                     if (arcId == id)
-                        transition.outputs.splice(index, 1);
+                        element.outputs.splice(index, 1);
                 });
             });
         }
