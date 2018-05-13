@@ -48,21 +48,25 @@
                     class="btn btn-primary"
                     ng-click="vm.startSimulation()"
                 >
-                    <i class="fas fa-play"></i>
+                    <i class="fas fa-play" />
                 </button>
                 <button
                     title="Play animation"
                     class="btn btn-info"
                     ng-click="vm.donwloadNetFile()"
                 >
-                    <i class="fas fa-download"></i>
+                    <i class="fas fa-download" />
                 </button>
                 <button
                     title="Play animation"
                     class="btn btn-info"
-                    ng-click="vm.loadNetFile()"
+                    type="file"
+                    ngf-select="vm.loadNetFile($file, $invalidFiles)"
+                    accept=".json"
+                    ngf-max-height="1000"
+                    ngf-max-size="1MB"
                 >
-                    <i class="fas fa-upload"></i>
+                    <i class="fas fa-upload" />
                 </button>
             </div>
         </div>
