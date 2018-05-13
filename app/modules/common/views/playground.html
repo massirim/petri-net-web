@@ -11,17 +11,64 @@
         </div>
         <div class="row">
             <div class="col text-center">
-                <button title="Add place (P)" class="btn btn-success" ng-click="vm.addPlace()"> <i class="far fa-circle"></i> </button>
-                <button title="Add transition (T)" class="btn btn-success" ng-click="vm.addTransition()"> <i class="far fa-square"></i> </button>
-                <button title="Create arc (A)" class="btn btn-info" ng-click="vm.addArc()"> <i class="fas fa-long-arrow-alt-right"></i> </button>
-                <button title="Remove element (R)" class="btn btn-danger" ng-click="vm.removeElement()"> <i class="far fa-times-circle"></i> </button>
-                <button title="Clear all" class="btn btn-dark" ng-click="vm.clear()"> <i class="far fa-file"></i> </button>
-                <button title="Clear all" class="btn btn-warning" ng-click="vm.startSimulation()"> <i class="far fa-play"></i> </button>
+                <button
+                    title="Add place (P)"
+                    class="btn btn-success"
+                    ng-click="vm.addPlace()"
+                >
+                    <i class="fas fa-circle" />
+                </button>
+                <button
+                    title="Add transition (T)"
+                    class="btn btn-success"
+                    ng-click="vm.addTransition()"
+                >
+                    <i class="fas fa-square" />
+                </button>
+                <button
+                    title="Create arc (A)"
+                    class="btn btn-success"
+                    ng-click="vm.addArc()"
+                >
+                    <i class="fas fa-long-arrow-alt-right" />
+                </button>
+                <button
+                    title="Remove element (R)"
+                    class="btn btn-danger"
+                    ng-click="vm.removeElement()"
+                >
+                    <i class="fas fa-times-circle" />
+                </button>
             </div>
         </div>
         <div class="row">
             <div class="col text-center">
-                <small>by: Alyson Maia (<a href="https://github.com/FederalCircle">Github</a>)</small>
+                <button
+                    title="Play animation"
+                    class="btn btn-primary"
+                    ng-click="vm.startSimulation()"
+                >
+                    <i class="fas fa-play"></i>
+                </button>
+                <button
+                    title="Play animation"
+                    class="btn btn-info"
+                    ng-click="vm.donwloadNetFile()"
+                >
+                    <i class="fas fa-download"></i>
+                </button>
+                <button
+                    title="Play animation"
+                    class="btn btn-info"
+                    ng-click="vm.loadNetFile()"
+                >
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <small>by: Alyson Maia (<a href="https://github.com/FederalCircle" target="_blank">Github</a>)</small>
             </div>
         </div>
     </div>
