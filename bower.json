@@ -14,8 +14,8 @@
     "angular-ui-router": "^1.0.10",
     "bootstrap": "^4.0.0",
     "svg.js": "^2.6.4",
-    "Font-Awesome": "git+https://github.com/FortAwesome/Font-Awesome.git#^5.0.8",
     "jquery": "^3.3.1",
-    "svg.filter.js": "git+https://github.com/svgdotjs/svg.filter.js.git#^2.0.2"
+    "svg.filter.js": "git+https://github.com/svgdotjs/svg.filter.js.git#^2.0.2",
+    "ng-file-upload": "^12.2.13"
   }
 }

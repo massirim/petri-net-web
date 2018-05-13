@@ -8,6 +8,7 @@
      **/
     var dependencies = [
         'ui.router',
+        'ngFileUpload',
         'petriNet.common'
     ];
 
